@@ -1,0 +1,29 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/delcoii/carla-ros-bridge/catkin_ws/devel/include/**",
+        "/home/delcoii/catkin_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/delcoii/catkin_ws/src/cv_practice/include/**",
+        "/home/delcoii/catkin_ws/src/easy_tutorial/include/**",
+        "/home/delcoii/catkin_ws/src/marker_array_tutorial/include/**",
+        "/home/delcoii/catkin_ws/src/marker_tutorial/include/**",
+        "/home/delcoii/catkin_ws/src/odometry_tutorial/include/**",
+        "/home/delcoii/carla-ros-bridge/catkin_ws/src/ros-bridge-0.9.12/pcl_recorder/include/**",
+        "/home/delcoii/catkin_ws/src/waypoint_odo/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
