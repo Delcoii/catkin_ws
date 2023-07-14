@@ -67,7 +67,7 @@ int main (int argc, char** argv) {
 
         now = ros::Time::now();
 
-        odo2display.header.frame_id = "test_frame";
+        odo2display.header.frame_id = "map";
         odo2display.header.stamp = now;
 
 
