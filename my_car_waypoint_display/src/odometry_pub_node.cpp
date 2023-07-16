@@ -43,7 +43,7 @@ int main (int argc, char** argv) {
         odometry_display_count++;
     }
 
-    // get pose.position data x, y, z
+    // get twist linear xyz and angular xyz
     while (ifstr_twist) {
         std::vector<double> temp(6, 0);
 
