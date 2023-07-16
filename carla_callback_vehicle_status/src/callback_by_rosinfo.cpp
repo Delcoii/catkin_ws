@@ -2,16 +2,27 @@
 #include <iostream>
 
 #include <ros/ros.h>
+#include <tf/transform_datatypes.h>
 #include <carla_callback_vehicle_status/CarlaEgoVehicleControl.h>
 #include <carla_callback_vehicle_status/CarlaEgoVehicleStatus.h>
 
 
 void CarStatusCallback (const carla_callback_vehicle_status::CarlaEgoVehicleStatus::ConstPtr& msg) {
     
+    // for printing bool values
     std::string hand_brake_print;
     std::string reverse_print;
     std::string manual_gear_print;
     
+    // for conversion, quaternion to euler 
+    tf::Quaternion car_quat(msg->orientation.x, msg->orientation.y, msg->orientation.z, msg->orientation.w);
+    
+    tf::Matrix3x3 car_mat(car_quat);
+    double roll, pitch, yaw;
+    car_mat.getRPY(roll, pitch, yaw);
+
+
+
     if (msg->control.hand_brake == true)
         hand_brake_print = "true";
     else
@@ -35,7 +46,7 @@ void CarStatusCallback (const carla_callback_vehicle_status::CarlaEgoVehicleStat
     std::endl;
     
     std::cout << 
-        "velocity(m/s) : " << msg->velocity << "\n\n" << 
+        "velocity(m/s) \t: " << msg->velocity << "\n\n" << 
         "acceleration (m/s^2): " << "\n" <<
         "linear x\t\t: " << msg->acceleration.linear.x << "\n" <<
         "linear y\t\t: " << msg->acceleration.linear.y << "\n" << 
@@ -44,7 +55,13 @@ void CarStatusCallback (const carla_callback_vehicle_status::CarlaEgoVehicleStat
         "orientation x\t\t: " << msg->orientation.x << "\n" <<
         "orientation y\t\t: " << msg->orientation.y << "\n" <<
         "orientation z\t\t: " << msg->orientation.z << "\n" <<
-        "orientation w\t\t: " << msg->orientation.w << "\n" 
+        "orientation w\t\t: " << msg->orientation.w << "\n" <<
+        "roll \t\t\t: " << roll << "\n" <<
+        "pitch \t\t\t: " << pitch << "\n" << 
+        "yaw \t\t\t: " << yaw << "\n" <<
+        "roll(deg) \t\t: " << roll*180./M_PI << "\n" << 
+        "pitch(deg) \t\t: " << pitch*180./M_PI << "\n" << 
+        "yaw(deg) \t\t: " << yaw*180./M_PI << "\n"
     << std::endl;
 
     std::cout <<
@@ -56,11 +73,11 @@ void CarStatusCallback (const carla_callback_vehicle_status::CarlaEgoVehicleStat
 
     std::cout << 
         "(bool)\n" << 
-        "hand_brake :\t" << hand_brake_print << "\n" <<
-        "reverse :\t" << reverse_print << "\n" <<
-        "manual_mode :\t" << manual_gear_print << "\n\n" <<
+        "hand_brake \t\t:" << hand_brake_print << "\n" <<
+        "reverse \t\t:" << reverse_print << "\n" <<
+        "manual_gear_shift \t:" << manual_gear_print << "\n\n" <<
         
-        "(-1, 1 ~ 6)\ngear :\t" << msg->control.gear << "\n" <<
+        "(-1 ~ 6)\ngear \t: " << msg->control.gear << "\n" <<
     std::endl;
 
     std::cout << "==============================\n" << std::endl;
