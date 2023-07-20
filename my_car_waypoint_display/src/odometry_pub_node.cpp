@@ -137,8 +137,7 @@ int main (int argc, char** argv) {
                 "readed data :\t" << data_size << "\n" << 
                 "published odometry : " << displayed_odometry_count <<
             std::endl;
-            return 0;
-
+            displayed_odometry_count = 0;
         }
             
         wypt_odo_pub.publish(odo2display);
