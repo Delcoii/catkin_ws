@@ -20,12 +20,10 @@
  * THE SOFTWARE.
  */
 
-#ifndef _PID_H_
-#define _PID_H_
+#ifndef _PID_SOURCE_
+#define _PID_SOURCE_
 
-#include <iostream>
-#include <cmath>
-#include "pid.h"
+#include "my_car_stanley_method/pid.h"
 
 using namespace std;
 
@@ -45,26 +43,6 @@ class PIDImpl
         double _Ki;
         double _pre_error;
         double _integral;
-};
-
-
-class PID
-{
-    public:
-        // Kp -  proportional gain
-        // Ki -  Integral gain
-        // Kd -  derivative gain
-        // dt -  loop interval time
-        // max - maximum value of manipulated variable
-        // min - minimum value of manipulated variable
-        PID( double dt, double max, double min, double Kp, double Kd, double Ki );
-
-        // Returns the manipulated variable given a setpoint and current process value
-        double calculate( double setpoint, double pv );
-        ~PID();
-
-    private:
-        PIDImpl *pimpl;
 };
 
 
@@ -132,6 +110,5 @@ double PIDImpl::calculate( double setpoint, double pv )
 PIDImpl::~PIDImpl()
 {
 }
-
 
 #endif

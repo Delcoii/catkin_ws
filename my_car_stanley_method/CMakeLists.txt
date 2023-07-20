@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(carla_longitudinal_ex)
+project(my_car_stanley_method)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++17)
@@ -9,12 +9,10 @@ add_compile_options(-std=c++17)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
     geometry_msgs
+    message_generation
     roscpp
     std_msgs
-
-    message_generation
 )
-
 
 add_message_files(
     FILES
@@ -28,14 +26,18 @@ generate_messages(
     std_msgs
 )
 
-
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES carla_longitudinal_ex
+    LIBRARIES my_car_stanley_method
     CATKIN_DEPENDS geometry_msgs roscpp std_msgs
     DEPENDS system_lib
 )
 
+
+
+###########
+## Build ##
+###########
 
 include_directories(
     include
@@ -43,15 +45,19 @@ include_directories(
 )
 
 
-add_executable(carla_longitudinal_ex
-    src/carla_longitudinal.cpp
+
+add_executable(my_car_stanley_method
+    src/stanley_pid.cpp
     src/pid.cpp
+    src/sub_pub_class.cpp
+    src/waypoint_save.cpp
 )
 
-add_dependencies(carla_longitudinal_ex ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+add_dependencies(my_car_stanley_method ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 
-target_link_libraries(carla_longitudinal_ex
+target_link_libraries(my_car_stanley_method
     ${catkin_LIBRARIES}
 )
 
@@ -102,7 +108,7 @@ target_link_libraries(carla_longitudinal_ex
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_carla_longitudinal_ex.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_my_car_stanley_method.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
