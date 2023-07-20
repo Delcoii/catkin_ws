@@ -35,7 +35,7 @@ void SaveWaypoint(std::vector<std::vector<double>>& vec_arr) {
         // waypoint closer than 0.2m to previous one
         if (distance < WYPT_DIST) {
             vec_arr.erase(vec_arr.begin() + i);
-            // std::cout << "erased!" << std::endl;
+            std::cout << "erased!" << std::endl;
         }
         else {  // distance is farther than 0.19m
             prev_pose = vec_arr[i];
