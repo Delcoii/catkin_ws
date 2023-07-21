@@ -63,7 +63,8 @@ void MyCarStatus::print_val() {
 
     std::cout << 
         "publishing data : \n" << 
-        "throttle : " << msg2pub.throttle << "\n" << 
+        "throttle\t: " << msg2pub.throttle << "\n" << 
+        "steeering\t: " << msg2pub.steer << "\n" <<
         "========" <<
     std::endl;
 }

@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
     MyCarStatus car_data;
 
     // values for PID control
-    PID longitudinal_pid = PID((1./LOOP_RATE), THROTTLE_MAX, THROTTLE_MIN, P_GAIN, I_GAIN, D_GAIN);
+    PID longitudinal_pid = PID((1./LOOP_RATE), THROTTLE_MAX, THROTTLE_MIN, P_GAIN, D_GAIN, I_GAIN);
     double pid_output;
 
     // values for stanley method
@@ -162,7 +162,6 @@ int main(int argc, char** argv) {
             "car_wypt_diff_deg\t: " << car_wypt_diff_deg << "\n" << 
             "steering_deg\t\t: " << steering_deg << "\n" <<
             "steering_val\t\t: " << steering_deg << "\n" <<
-            "\n\n===========" << 
         std::endl;
         
 
