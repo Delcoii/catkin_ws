@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
     message_generation
     roscpp
     std_msgs
+    tf
 )
 
 add_message_files(

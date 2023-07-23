@@ -20,11 +20,16 @@ void MyCarStatus::GetVelocity(const my_car_stanley_method::CarlaEgoVehicleStatus
 }
 
 void MyCarStatus::GetFLFRCenterPose(const geometry_msgs::PoseStamped::ConstPtr& msg) {
-    front_wheel_pos_x = msg->pose.position.x;    
-    front_wheel_pos_y = msg->pose.position.y;    
-    front_wheel_pos_z = msg->pose.position.z;    
-
+    //std::cout << "get!!" << std::endl;
+    front_wheel_center.position.x = msg->pose.position.x;    
+    front_wheel_center.position.y = msg->pose.position.y;    
+    front_wheel_center.position.z = msg->pose.position.z;
+    front_wheel_center.orientation.x = msg->pose.orientation.x;
+    front_wheel_center.orientation.y = msg->pose.orientation.y;
+    front_wheel_center.orientation.z = msg->pose.orientation.z;
+    front_wheel_center.orientation.w = msg->pose.orientation.w;
 }
+
 
 void MyCarStatus::GetOdometryPose(const nav_msgs::Odometry::ConstPtr& msg) {
     car_odometry.pose.pose.position.x = msg->pose.pose.position.x;
@@ -54,9 +59,10 @@ void MyCarStatus::print_val() {
         "subscribed data : \n" << 
         "velocity(m/s) : " << velocity_ms << "\n" <<
         "front wheel's center :\n" <<
-        "    x : " << front_wheel_pos_x << "\n" << 
-        "    y : " << front_wheel_pos_y << "\n" <<
-        "    z : " << front_wheel_pos_z << "\n" <<
+        "position : \n" << 
+        "    x : " << front_wheel_center.position.x << "\n" << 
+        "    y : " << front_wheel_center.position.y << "\n" <<
+        "    z : " << front_wheel_center.position.z << "\n" <<
     std::endl;
 
 

@@ -13,7 +13,8 @@ int main(int argc, char** argv){
 
     ros::Rate rate(60);
     
-    double pose_x, pose_y, pose_z;
+    double position_x, position_y, position_z;
+    double orientation_x, orientation_y, orientation_z, orientation_w;
 
     while (ros::ok()) {
 
@@ -26,24 +27,24 @@ int main(int argc, char** argv){
             ros::Duration(1.0).sleep();
         }
 
-        pose_x = transform.getOrigin().x();
-        pose_y = transform.getOrigin().y();
-        pose_z = transform.getOrigin().z();
+        position_x = transform.getOrigin().x();
+        position_y = transform.getOrigin().y();
+        position_z = transform.getOrigin().z();
+        orientation_x = transform.getRotation().x();
+        orientation_x = transform.getRotation().y();
+        orientation_x = transform.getRotation().z();
+        orientation_x = transform.getRotation().w();
 
-        /*
-        std::cout <<
-            "listening and calculating \n" <<
-            "position x : "<< pose_x << "\n" << 
-            "position y : "<< pose_y << "\n" <<
-            "position z : "<< pose_z << "\n" <<
-            "=========\n" <<
-        std::endl;
-        */
 
         pose2pub.header.stamp = ros::Time::now();
-        pose2pub.pose.position.x = pose_x;
-        pose2pub.pose.position.y = pose_y;
-        pose2pub.pose.position.z = pose_z;
+        pose2pub.pose.position.x = position_x;
+        pose2pub.pose.position.y = position_y;
+        pose2pub.pose.position.z = position_z;
+        pose2pub.pose.orientation.x = orientation_x;
+        pose2pub.pose.orientation.y = orientation_y;
+        pose2pub.pose.orientation.z = orientation_z;
+        pose2pub.pose.orientation.w = orientation_w;
+
 
         tf_pose_pub.publish(pose2pub);
 

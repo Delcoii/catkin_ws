@@ -21,19 +21,19 @@
 
 
 
-#define POSE_X              0
-#define POSE_Y              1
-#define POSE_Z              2
-#define ORIENTATION_X       3
-#define ORIENTATION_Y       4
-#define ORIENTATION_Z       5
-#define ORIENTATION_W       6
+#define POSITION_X              0
+#define POSITION_Y              1
+#define POSITION_Z              2
+#define ORIENTATION_X           3
+#define ORIENTATION_Y           4
+#define ORIENTATION_Z           5
+#define ORIENTATION_W           6
 
 #define WYPT_DIST_M         0.2
 
 
-
-void CSV2Data(std::string csv_location, std::string  reading_col_start_title, std::string reading_col_end_title, std::vector<std::vector<double>> &data_vec);
+// return data's vector length
+int CSV2Data(std::string csv_location, std::string  reading_col_start_title, std::string reading_col_end_title, std::vector<std::vector<double>> &data_vec);
 
 
 void WaypointRearrange (std::vector<std::vector<double>> &data_vec);
