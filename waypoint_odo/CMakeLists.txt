@@ -13,7 +13,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES waypoint_odo
   CATKIN_DEPENDS nav_msgs roscpp
-  DEPENDS system_lib
+  #DEPENDS system_lib
 )
 
 
