@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
         // trsfm2pub.header.stamp = current_time;
 
         trsfm.setOrigin (tf::Vector3(1.9035, 0.0, 0.0));
-        trsfm.setRotation(tf::Quaternion(0, 0, 0, 1));
+        trsfm.setRotation(tf::Quaternion(0., 0., 0., 1.));
 
         trsfm_brdcster.sendTransform(tf::StampedTransform(trsfm, current_time, "ego_vehicle", "front_wheel_center"));
 

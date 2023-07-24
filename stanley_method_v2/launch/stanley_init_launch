@@ -1,0 +1,8 @@
+<launch>
+
+    
+    <node pkg="my_car_stanley_method" type="my_car_stanley_method" name="my_car_stanley_method"/>
+
+
+
+</launch>

@@ -11,6 +11,7 @@ MyCarStatus::MyCarStatus () {
 
     stanley_pid_pub = nh.advertise<my_car_stanley_method::CarlaEgoVehicleControl>("/carla/ego_vehicle/vehicle_control_cmd", 100);
 
+
 }
 
 

@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
     tf
 )
 
+
 add_message_files(
     FILES
     CarlaEgoVehicleControl.msg
@@ -34,6 +35,9 @@ catkin_package(
     DEPENDS system_lib
 )
 
+############################################
+find_package(yaml-cpp REQUIRED)
+
 
 
 ###########
@@ -43,6 +47,7 @@ catkin_package(
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
+    ${YAML_CPP_INCLUDE_DIRS}
 )
 
 
@@ -57,6 +62,7 @@ add_dependencies(stanley_method_v2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_
 
 target_link_libraries(stanley_method_v2
     ${catkin_LIBRARIES}
+    ${YAML_CPP_LIBRARIES}
 )
 
 #############
