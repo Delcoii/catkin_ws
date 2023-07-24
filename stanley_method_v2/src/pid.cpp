@@ -23,7 +23,7 @@
 #ifndef _PID_SOURCE_
 #define _PID_SOURCE_
 
-#include "my_car_stanley_method/pid.h"
+#include "stanley_method_v2/pid.h"
 
 using namespace std;
 

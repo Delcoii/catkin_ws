@@ -1,11 +1,11 @@
 #include <ros/ros.h>
 #include <tf/tf.h>
 
-#include "my_car_stanley_method/pid.h"
-#include "my_car_stanley_method/sub_pub_class.h"
-#include "my_car_stanley_method/waypoint_save.h"
+#include "stanley_method_v2/pid.h"
+#include "stanley_method_v2/sub_pub_class.h"
+#include "stanley_method_v2/waypoint_save.h"
 
-#include "my_car_stanley_method/parameters.h"
+#include "stanley_method_v2/parameters.h"
 
 
 double rad2deg(double rad);
@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
 
     while (ros::ok()) {
         
-        pid_output = longitudinal_pid.calculate(p.TARGET_VELOCITY_MS, car_data.velocity_ms);
+        pid_output = longitudinal_pid.calculate(p.TARGET_VELOCITY_MS, car_data.car_status.vehicle_status.velocity);
 
 
         tf::Transform wypt_tf;
@@ -73,24 +73,24 @@ int main(int argc, char** argv) {
 
         tf::Transform front_wheel_tf;
         front_wheel_tf.setOrigin (tf::Vector3(
-            car_data.front_wheel_center.position.x,
-            car_data.front_wheel_center.position.y,
-            car_data.front_wheel_center.position.z
+            car_data.car_status.front_wheel_pose.position.x,
+            car_data.car_status.front_wheel_pose.position.y,
+            car_data.car_status.front_wheel_pose.position.z
         ));
         // using car orientation..
-        front_wheel_tf.setRotation (tf::Quaternion(
-            car_data.car_odometry.pose.pose.orientation.x,
-            car_data.car_odometry.pose.pose.orientation.y,
-            car_data.car_odometry.pose.pose.orientation.z,
-            car_data.car_odometry.pose.pose.orientation.w
-        ));
-
         // front_wheel_tf.setRotation (tf::Quaternion(
-        //     car_data.front_wheel_center.orientation.x,
-        //     car_data.front_wheel_center.orientation.y,
-        //     car_data.front_wheel_center.orientation.z,
-        //     car_data.front_wheel_center.orientation.w
+        //     car_data.cat_status.car_odometry.pose.pose.orientation.x,
+        //     car_data.cat_status.car_odometry.pose.pose.orientation.y,
+        //     car_data.cat_status.car_odometry.pose.pose.orientation.z,
+        //     car_data.cat_status.car_odometry.pose.pose.orientation.w
         // ));
+
+        front_wheel_tf.setRotation (tf::Quaternion(
+            car_data.car_status.front_wheel_pose.orientation.x,
+            car_data.car_status.front_wheel_pose.orientation.y,
+            car_data.car_status.front_wheel_pose.orientation.z,
+            car_data.car_status.front_wheel_pose.orientation.w
+        ));
 
         tf::Transform car_wypt_error_tf = front_wheel_tf.inverseTimes(wypt_tf);
 
@@ -113,7 +113,7 @@ int main(int argc, char** argv) {
         if (car_wypt_error_tf.getOrigin().y() < 0.) {
             wypt_car_dist_m *= (-1.);
         }
-        car_wypt_diff_deg = rad2deg(atan(deg2rad(p.STANLEY_CONSTANT * (wypt_car_dist_m / (car_data.velocity_ms + p.MIN_ARCTAN_NUMERATOR)))));
+        car_wypt_diff_deg = rad2deg(atan(deg2rad(p.STANLEY_CONSTANT * (wypt_car_dist_m / (car_data.car_status.vehicle_status.velocity + p.MIN_ARCTAN_NUMERATOR)))));
 
         
         // set steering angle
@@ -129,8 +129,6 @@ int main(int argc, char** argv) {
 
         // init stamp, throttle, steer, brake
         car_data.InitPubMsg(ros::Time::now(), pid_output, steering_val);
-
-        car_data.print_val();
         car_data.pub_data();
 
         std::cout << 
