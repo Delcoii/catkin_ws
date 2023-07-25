@@ -47,7 +47,7 @@ int CSV2Data(std::string csv_location, std::string  reading_col_start_title, std
 
 
     int data_width = reading_col_end - reading_col_start + 1;
-    std::cout << "reading column width : " << data_width << std::endl;
+    
 
     // save data
     // getline's default delim is  '\n'
@@ -76,6 +76,7 @@ int CSV2Data(std::string csv_location, std::string  reading_col_start_title, std
     }
     data_stream.close();
 
+    std::cout << "reading column width : " << data_width << std::endl;
     return data_width;
 }
 
@@ -103,4 +104,5 @@ void WaypointRearrange (std::vector<std::vector<double>> &data_vec) {
         }
 
     }
+    std::cout << "waypoint size : " << data_vec.size();
 }

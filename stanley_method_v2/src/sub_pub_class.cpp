@@ -18,10 +18,11 @@ void MyCarStatus::GetData(const stanley_method_v2::CallbackMyCar::ConstPtr& msg)
 }
 
 
-void MyCarStatus::InitPubMsg(const ros::Time time, const double throttle, const double steer) {
+void MyCarStatus::InitPubMsg(const ros::Time time, const double throttle, const double steer, const double brake) {
     msg2pub.header.stamp = time;
     msg2pub.throttle = throttle;
     msg2pub.steer = steer;
+    msg2pub.brake = brake;
 }
 
 void MyCarStatus::pub_data() {

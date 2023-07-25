@@ -28,14 +28,30 @@ int main(int argc, char** argv) {
 
     ros::Rate loop_rate_hz(p.LOOP_RATE); // initialize dt 1/60s
 
-
+    
+    // read csv data to column position x ~ orientation w
     std::vector<std::vector<double>> waypoints;
-    std::string csv_loc = "/home/delcoii/catkin_ws/src/stanley_method_v2/src/waypoint_odometry.csv";
-    std::string start_col_title = "field.pose.pose.position.x";
-    std::string end_col_title = "field.pose.pose.orientation.w";
-    CSV2Data(csv_loc, start_col_title, end_col_title, waypoints);
-    WaypointRearrange(waypoints);
+    std::string wypt_csv_loc = "/home/delcoii/waypoint/callback_data.csv";
+    std::string wypt_start_col = "field.front_wheel_pose.position.x";
+    std::string wypt_end_col = "field.front_wheel_pose.orientation.w";
 
+    // read column data
+    std::vector<std::vector<double>> speed_vec;
+    std::string speed_csv_loc = "/home/delcoii/waypoint/callback_data.csv";
+    std::string speed_start_col = "field.vehicle_status.velocity";
+    std::string speed_end_col = speed_start_col;
+
+
+    CSV2Data(wypt_csv_loc, wypt_start_col, wypt_end_col, waypoints);
+    CSV2Data(speed_csv_loc, speed_start_col, speed_end_col, speed_vec);
+    // std::cout << "debug" << std::endl;
+
+    for (int idx = 0; idx < waypoints.size(); idx++) {
+        waypoints[idx].push_back(speed_vec[idx][0]);
+    }
+
+    WaypointRearrange(waypoints);
+    // std::cout << waypoints.size() << std::endl;
 
     // values for PID control
     PID longitudinal_pid = PID((1./p.LOOP_RATE), p.THROTTLE_MAX, p.THROTTLE_MIN, p.P_GAIN, p.D_GAIN, p.I_GAIN);
@@ -55,9 +71,6 @@ int main(int argc, char** argv) {
 
     while (ros::ok()) {
         
-        pid_output = longitudinal_pid.calculate(p.TARGET_VELOCITY_MS, car_data.car_status.vehicle_status.velocity);
-
-
         tf::Transform wypt_tf;
         wypt_tf.setOrigin (tf::Vector3(
             waypoints[target_wypt_idx][POSITION_X],
@@ -77,14 +90,6 @@ int main(int argc, char** argv) {
             car_data.car_status.front_wheel_pose.position.y,
             car_data.car_status.front_wheel_pose.position.z
         ));
-        // using car orientation..
-        // front_wheel_tf.setRotation (tf::Quaternion(
-        //     car_data.cat_status.car_odometry.pose.pose.orientation.x,
-        //     car_data.cat_status.car_odometry.pose.pose.orientation.y,
-        //     car_data.cat_status.car_odometry.pose.pose.orientation.z,
-        //     car_data.cat_status.car_odometry.pose.pose.orientation.w
-        // ));
-
         front_wheel_tf.setRotation (tf::Quaternion(
             car_data.car_status.front_wheel_pose.orientation.x,
             car_data.car_status.front_wheel_pose.orientation.y,
@@ -94,20 +99,18 @@ int main(int argc, char** argv) {
 
         tf::Transform car_wypt_error_tf = front_wheel_tf.inverseTimes(wypt_tf);
 
-
         wypt_car_dist_m = sqrt( pow(car_wypt_error_tf.getOrigin().x(), 2) + pow(car_wypt_error_tf.getOrigin().y(), 2));
 
-        // update target waypoint
-        if (wypt_car_dist_m <= p.LOOKAHEAD_DIST_M) {
-            target_wypt_idx++;
-        }
+
+        // pid_output = longitudinal_pid.calculate(p.TARGET_VELOCITY_MS, car_data.car_status.vehicle_status.velocity);
+        pid_output = longitudinal_pid.calculate(waypoints[target_wypt_idx][SPEED_MS], car_data.car_status.vehicle_status.velocity);
+
 
         // calculating psi
         double yaw_error_rad = tf::getYaw(car_wypt_error_tf.getRotation());
         psi_angle_deg = rad2deg(yaw_error_rad);
 
         
-
         // calculating arctangent term
         // if waypoint is in right side of my car
         if (car_wypt_error_tf.getOrigin().y() < 0.) {
@@ -123,24 +126,27 @@ int main(int argc, char** argv) {
         steering_val = map(steering_deg, p.CYBERTRUCK_MAX_STEER_DEG, p.CYBERTRUCK_MIN_STEER_DEG, -1.0, 1.0);
         
         if (target_wypt_idx == waypoints.size()-1) {
-            car_data.InitPubMsg(ros::Time::now(), 0., 0.);
+            car_data.InitPubMsg(ros::Time::now(), 0., 0., 1.);
+            car_data.pub_data();
             return 0;
         }
 
         // init stamp, throttle, steer, brake
-        car_data.InitPubMsg(ros::Time::now(), pid_output, steering_val);
+        car_data.InitPubMsg(ros::Time::now(), pid_output, steering_val, 0.);
         car_data.pub_data();
 
         std::cout << 
             "waypoint idx : " << target_wypt_idx << "\n" << 
             "car to waypoint distance(m) : " << wypt_car_dist_m << "\n" <<
             "psi (deg) : " << psi_angle_deg << "\n" <<
-            // "error orientation x : " << car_wypt_error_tf.getRotation().x() << "\n" <<
-            // "error orientation y : " << car_wypt_error_tf.getRotation().y() << "\n" <<
-            // "error orientation z : " << car_wypt_error_tf.getRotation().z() << "\n" <<
-            // "error orientation w : " << car_wypt_error_tf.getRotation().w() << "\n" <<
+            "target speed (m/s) : " << waypoints[target_wypt_idx][SPEED_MS] << "\n" << 
         std::endl;
 
+
+        // update target waypoint
+        if (abs(wypt_car_dist_m) <= p.LOOKAHEAD_DIST_M) {
+            target_wypt_idx++;
+        }
 
         loop_rate_hz.sleep();
         ros::spinOnce();

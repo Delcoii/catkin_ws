@@ -28,6 +28,7 @@
 #define ORIENTATION_Y           4
 #define ORIENTATION_Z           5
 #define ORIENTATION_W           6
+#define SPEED_MS                7
 
 #define WYPT_DIST_M         0.2
 

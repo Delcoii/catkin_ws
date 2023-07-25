@@ -25,7 +25,7 @@ public:
 
     void GetData(const stanley_method_v2::CallbackMyCar::ConstPtr& msg);
 
-    void InitPubMsg(const ros::Time time, const double throttle, const double steer);
+    void InitPubMsg(const ros::Time time, const double throttle, const double steer, const double brake);
     void pub_data();
     
 };
