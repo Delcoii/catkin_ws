@@ -27,9 +27,23 @@ int main (int argc, char** argv) {
     std::vector<std::vector<double>> waypoints;
     std::string wypt_csv_loc = "/home/delcoii/waypoint/callback_data.csv";
     std::string wypt_start_col = "field.front_wheel_pose.position.x";
-    std::string wypt_end_col = "field.front_wheel_pose.orientation.w";
+    std::string wypt_end_col = "field.front_wheel_pose.position.z";
 
+    std::vector<std::vector<double>> orientations;
+    std::string front_wheel_ori_start = "field.car_odometry.pose.pose.orientation.x";
+    std::string front_wheel_ori_end = "field.car_odometry.pose.pose.orientation.w";
+    
+    // using car odometry because front wheel orientation update delayed
+
+    
     CSV2Data(wypt_csv_loc, wypt_start_col, wypt_end_col, waypoints);
+    CSV2Data(wypt_csv_loc, front_wheel_ori_start, front_wheel_ori_end, orientations);
+
+    for (int idx = 0; idx < waypoints.size(); idx++) {
+        for (int i = 0; i < 4; i++) {
+            waypoints[idx].push_back(orientations[idx][i]);
+        }
+    }
 
     WaypointRearrange(waypoints);
 

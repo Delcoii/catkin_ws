@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
     // ros::Publisher stanley_tf_pub = nh.advertise<tf::tfMessage>("stanley_tf", 100);
 
-    ros::Rate loop_rate_hz(120);
+    ros::Rate loop_rate_hz(60);
 
     tf::TransformBroadcaster trsfm_brdcster;
     tf::Transform trsfm;
