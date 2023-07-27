@@ -1,4 +1,4 @@
-#include "stanley_method_v3/waypoint_save.h"
+#include "only_going_forward/waypoint_save.h"
 
 
 int CSV2Data(std::string csv_location, std::string  reading_col_start_title, std::string reading_col_end_title, std::vector<std::vector<double>> &data_vec) {
@@ -92,7 +92,7 @@ void WaypointRearrange (std::vector<std::vector<double>> &data_vec) {
 
         // calculate distance of each waypoints
         double distance = sqrt(pow(prev_pose[POSITION_X]-temp[POSITION_X], 2) + pow(prev_pose[POSITION_Y]-temp[POSITION_Y], 2));
-        // std::cout << distance << std::endl;
+        std::cout << distance << std::endl;
 
         // closer than WYPT_DIST to previous one
         if (distance < WYPT_DIST_M) {
@@ -104,5 +104,5 @@ void WaypointRearrange (std::vector<std::vector<double>> &data_vec) {
         }
 
     }
-    std::cout << "waypoint size : " << data_vec.size() << std::endl;
+    std::cout << "waypoint size : " << data_vec.size();
 }

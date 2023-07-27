@@ -1,15 +1,15 @@
-#include <thread>
-#include <chrono>
+// #include <thread>
+// #include <chrono>
 
 #include <ros/ros.h>
 #include <tf/tf.h>
 
-#include "stanley_method_v3/pid.h"
-#include "stanley_method_v3/sub_pub_class.h"
-#include "stanley_method_v3/waypoint_save.h"
-#include "stanley_method_v3/calculating_tools.h"
+#include "only_going_forward/pid.h"
+#include "only_going_forward/sub_pub_class.h"
+#include "only_going_forward/waypoint_save.h"
+#include "only_going_forward/calculating_tools.h"
 
-#include "stanley_method_v3/parameters.h"
+#include "only_going_forward/parameters.h"
 
 
 
@@ -17,7 +17,7 @@
 
 int main(int argc, char** argv) {
 
-    ros::init (argc, argv, "stanley_method_v3");
+    ros::init (argc, argv, "only_going_forward");
     ros::Time::init();
 
     // declare publishing and subscribing data
@@ -49,9 +49,8 @@ int main(int argc, char** argv) {
     }
 
     WaypointRearrange(waypoints);
-    // std::cout << waypoints.size() << std::endl;
 
-    // std::chrono::seconds wait_duration(2);
+    // std::chrono::seconds wait_duration(3);
     // std::this_thread::sleep_for(wait_duration);
 
     // values for PID control
@@ -139,7 +138,8 @@ int main(int argc, char** argv) {
         for (   int idx = target_wypt_idx;
                 idx > target_wypt_idx-50;
                 idx--) {
-            if (idx == -1) {
+            if (idx <= 3) {
+                min_dist_m = 0.;
                 break;
             }
 
@@ -151,14 +151,15 @@ int main(int argc, char** argv) {
             );
             // std::cout << temp_dist_m << std::endl;
 
-            if (min_dist_m > temp_dist_m)
+            if (min_dist_m > temp_dist_m) {
                 min_dist_m = temp_dist_m;
-
-            // std::cout << idx << std::endl;
+                // std::cout << target_wypt_idx-idx << std::endl;
+            }
             
         }
 
         wypt_following_error_avg_m = avg_filter(min_dist_m);
+        std::cout << wypt_following_error_avg_m << std::endl;
 
 
         std::cout << 
@@ -179,7 +180,7 @@ int main(int argc, char** argv) {
             std::cout << "waypoint following error average(m) : " << wypt_following_error_avg_m << std::endl;
             return 0;
         }
-        car_data.InitPubMsg(ros::Time::now(), pid_output, steering_val, 0.);
+        car_data.InitPubMsg(ros::Time::now(), pid_output, 0., 0.);
         car_data.pub_data();
 
 
