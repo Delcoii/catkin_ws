@@ -1,6 +1,3 @@
-#include <thread>
-#include <chrono>
-
 #include <ros/ros.h>
 #include <tf/tf.h>
 
@@ -51,8 +48,6 @@ int main(int argc, char** argv) {
     WaypointRearrange(waypoints);
     // std::cout << waypoints.size() << std::endl;
 
-    // std::chrono::seconds wait_duration(2);
-    // std::this_thread::sleep_for(wait_duration);
 
     // values for PID control
     PID longitudinal_pid = PID((1./p.LOOP_RATE), p.THROTTLE_MAX, p.THROTTLE_MIN, p.P_GAIN, p.D_GAIN, p.I_GAIN);
@@ -135,15 +130,17 @@ int main(int argc, char** argv) {
          * calculating minimum distance of waypoint from front wheel
          * for loop target waypoint index ~ target waypoint index-20
         */ 
-        min_dist_m = 9999.;
+        min_dist_m = 999.;
+        double temp_dist_m;
         for (   int idx = target_wypt_idx;
-                idx > target_wypt_idx-50;
+                idx > target_wypt_idx-40;
                 idx--) {
-            if (idx == -1) {
+            if (idx <= 3) {
+                min_dist_m = 0.;
                 break;
             }
 
-            double temp_dist_m = sqrt(
+            temp_dist_m = sqrt(
                 pow(car_data.car_status.front_wheel_pose.position.x - 
                     waypoints[idx][POSITION_X], 2) +
                 pow(car_data.car_status.front_wheel_pose.position.y - 
@@ -151,10 +148,10 @@ int main(int argc, char** argv) {
             );
             // std::cout << temp_dist_m << std::endl;
 
-            if (min_dist_m > temp_dist_m)
+            if (min_dist_m > temp_dist_m) {
                 min_dist_m = temp_dist_m;
-
-            // std::cout << idx << std::endl;
+                // std::cout << target_wypt_idx-idx << std::endl;
+            }
             
         }
 

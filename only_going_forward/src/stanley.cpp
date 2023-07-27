@@ -159,7 +159,7 @@ int main(int argc, char** argv) {
         }
 
         wypt_following_error_avg_m = avg_filter(min_dist_m);
-        std::cout << wypt_following_error_avg_m << std::endl;
+        // std::cout << wypt_following_error_avg_m << std::endl;
 
 
         std::cout << 
