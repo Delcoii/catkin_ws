@@ -19,7 +19,7 @@
             "id": "map"
         },
         {
-            "type": "vehicle.tesla.cybertruck",
+            "type": "vehicle.ford.mustang",
             "id": "ego_vehicle",
             "sensors": 
             [

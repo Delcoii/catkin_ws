@@ -1,0 +1,10 @@
+<launch>
+    <param name="front_wheel_pos_x" type="double" value="1.5617858509105815" />
+    <param name="rear_wheel_pos_x" type="double" value="-1.3244055556930903" />
+    <!-- <arg name="front_wheel_pos_x" default="1.5617858509105815" />
+    <arg name="rear_wheel_pos_x" default="-1.3244055556930903" /> -->
+
+    <node pkg="wheel_center_tf" type="wheel_center_tf" name="wheel_center_tf"/>
+
+
+</launch>
