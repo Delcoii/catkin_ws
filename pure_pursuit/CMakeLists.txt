@@ -39,9 +39,13 @@ include_directories(
 
 
 add_executable(pure_pursuit
-    src/pure_pursuit_node.cpp
-    src/ControlMsgs.cpp
-    src/waypoint_save.cpp
+    src/main.cpp
+    src/PurePursuitControl.cpp
+    
+    include/pure_pursuit/ControlMsgs/ControlMsgs.cpp
+    include/pure_pursuit/pid/pid.cpp
+    include/pure_pursuit/waypoint_save/waypoint_save.cpp
+    
 )
 
 add_dependencies(pure_pursuit ${${PROJECT_NAME}_EXPORTED_TARGETS}

@@ -25,13 +25,13 @@ int main (int argc, char** argv) {
 
 
     std::vector<std::vector<double>> waypoints;
-    std::string wypt_csv_loc = "/home/delcoii/waypoint/callback_data.csv";
-    std::string wypt_start_col = "field.front_wheel_pose.position.x";
-    std::string wypt_end_col = "field.front_wheel_pose.position.z";
+    std::string wypt_csv_loc = "/home/delcoii/waypoints/waypoints.csv";
+    std::string wypt_start_col = "field.pose.pose.position.x";
+    std::string wypt_end_col = "field.pose.pose.position.z";
 
     std::vector<std::vector<double>> orientations;
-    std::string front_wheel_ori_start = "field.car_odometry.pose.pose.orientation.x";
-    std::string front_wheel_ori_end = "field.car_odometry.pose.pose.orientation.w";
+    std::string front_wheel_ori_start = "field.pose.pose.orientation.x";
+    std::string front_wheel_ori_end = "field.pose.pose.orientation.w";
     
     // using car odometry because front wheel orientation update delayed
 
@@ -52,7 +52,7 @@ int main (int argc, char** argv) {
 
     ros::Rate loop_rate_hz(60);
 
-    ros::Publisher wypt_odo_pub = nh.advertise<nav_msgs::Odometry>("cybertruck_waypoint", 100);
+    ros::Publisher wypt_odo_pub = nh.advertise<nav_msgs::Odometry>("waypoints", 100);
 
     nav_msgs::Odometry odo2display;
     ros::Time now;
@@ -78,17 +78,20 @@ int main (int argc, char** argv) {
 
 
         displayed_odometry_count++;
+        wypt_odo_pub.publish(odo2display);
         if (displayed_odometry_count >= waypoints.size()) {
             
             std::cout <<
                 "readed data :\t" << waypoints.size() << "\n" << 
                 "published odometry : " << displayed_odometry_count <<
             std::endl;
-            displayed_odometry_count = 0;
+            // displayed_odometry_count = 0;
         }
             
-        wypt_odo_pub.publish(odo2display);
+        
         // ROS_INFO("published odometry %d \n", displayed_odometry_count);
+        if (displayed_odometry_count == waypoints.size()-1)
+            return 0;
 
         loop_rate_hz.sleep();
     }

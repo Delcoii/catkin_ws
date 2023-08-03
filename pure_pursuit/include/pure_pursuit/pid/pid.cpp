@@ -23,7 +23,7 @@
 #ifndef _PID_SOURCE_
 #define _PID_SOURCE_
 
-#include "stanley_method_v2/pid.h"
+#include "pure_pursuit/pid/pid.h"
 
 using namespace std;
 
