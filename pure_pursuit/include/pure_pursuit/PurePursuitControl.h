@@ -8,7 +8,7 @@
 #include <tf/transform_listener.h>
 
 
-#define LOOKAHEAD_DIST      7.
+#define LOOKAHEAD_DIST      30.
 #define WHEEL_BASE_M        2.886
 #define MAX_STEERING_DEG    34.9999
 
