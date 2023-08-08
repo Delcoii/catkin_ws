@@ -10,6 +10,7 @@ add_compile_options(-std=c++17)
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     tf
+    geometry_msgs
 )
 
 
@@ -26,7 +27,9 @@ include_directories(
 )
 
 
-add_executable(wheel_center_tf src/broadcast_wheel_center_tf.cpp)
+add_executable(wheel_center_tf
+    src/publish_wheel_center_pose.cpp
+)
 
 add_dependencies(wheel_center_tf ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 

@@ -40,13 +40,9 @@ public:
     void CalcAlpha();
     void CalcTheta();
 
-
-
     bool ArrivedLKDist();
 
     void print_val();
-
-
 
     double deg2rad(double deg);
     double rad2deg(double rad);
