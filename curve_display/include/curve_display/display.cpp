@@ -57,7 +57,7 @@ bool CurveDisplayer::SetMatrixCols(std::vector<std::vector<double>> vec, int tar
             return false;
         }
 
-        int fitting_start = target;
+        int fitting_start = target-20;
         int fitting_end = target+MATRIX_ROW;
         for (int idx = fitting_start; idx < fitting_end; idx++) {
             

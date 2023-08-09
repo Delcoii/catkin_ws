@@ -6,7 +6,7 @@
  * y = xA (matrix & vector expression)
  * 
  * so we can predict matrix A by
- * A = x^+ y
+ * A = x+(pseudo inverse) * y
  */
 #include <iostream>
 #include <vector>
