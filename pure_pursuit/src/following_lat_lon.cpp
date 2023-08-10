@@ -20,6 +20,7 @@
 
 #define REF_LATITUDE    0.
 #define REF_LONGITUDE   0.
+#define TARGET_VEL_MS   10.
 
 
 int main(int argc, char** argv) {
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
 
     while(ros::ok()) {
 
-        throttle_pid = longitudinal_pid.calculate(15., msgs.vehicle_status.velocity);
+        throttle_pid = longitudinal_pid.calculate(TARGET_VEL_MS, msgs.vehicle_status.velocity);
 
         steer_output = pp_ctr.SetSteer(
             waypoints[target_wypt_idx][POSITION_X],

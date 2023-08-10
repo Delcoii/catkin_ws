@@ -9,8 +9,8 @@ int main(int argc, char** argv) {
     ros::init (argc, argv, "utm_projection_node");
 
     // Define the WGS84 latitude and longitude coordinates
-    double lat = -0.0005984;
-    double lon = -0.0001416;
+    double lat = -0.0006044;
+    double lon = -0.0001415;
     double ref_lat = 0.;
     double ref_lon = 0.;
 

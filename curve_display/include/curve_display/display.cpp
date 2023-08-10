@@ -116,61 +116,6 @@ bool CurveDisplayer::SetMatrixCols(std::vector<std::vector<double>> vec, int tar
     }
 }
 
-/*
- * Set Columns for x matrix and y vector
- * assuming waypoint input is (latitude, longitude)
- 
-void CurveDisplayer::UpdateMatrixCols(std::vector<double> wypt_input) {
-    if (wypt_input.size() != 2) {
-        std::cout << "input column size is not 2!!!" << std::endl;
-        return;
-    }
-    
-    // transform waypoint based to front wheel center
-    tf::Transform front_wheel_tf;
-    tf::Transform wypt_tf;
-    wypt_tf.setOrigin(tf::Vector3(
-        wypt_input[0],  // latitude to utm projection value
-        wypt_input[1],  // longitude to utm projection value
-        0.
-    ));
-    wypt_tf.setRotation(tf::Quaternion(
-        0., 0., 0., 1.
-    ));
-
-    front_wheel_tf.setOrigin(tf::Vector3(
-        fr_pose.pose.position.x,
-        fr_pose.pose.position.y,
-        fr_pose.pose.position.z
-    ));
-    front_wheel_tf.setRotation(tf::Quaternion(
-        fr_pose.pose.orientation.x,
-        fr_pose.pose.orientation.y,
-        fr_pose.pose.orientation.z,
-        fr_pose.pose.orientation.w
-    ));
-    wypt_tf = front_wheel_tf.inverseTimes(wypt_tf);
-
-    x_mat.erase(x_mat.begin());
-    y_vec.erase(y_vec.begin());
-    
-    
-    std::vector<double> input_col;
-    double x3, x2, x1, x0;
-    x3 = pow(wypt_tf.getOrigin().x(), 3);
-    x2 = pow(wypt_tf.getOrigin().x(), 2);
-    x1 = wypt_tf.getOrigin().x();
-    x0 = 1.;
-    input_col.push_back(x3);
-    input_col.push_back(x2);
-    input_col.push_back(x1);
-    input_col.push_back(x0);
-    
-    x_mat.push_back(input_col);
-    y_vec.push_back(wypt_tf.getOrigin().y());
-
-}
-*/
 
 
 void CurveDisplayer::GetMatA() {
