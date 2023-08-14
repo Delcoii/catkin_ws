@@ -38,7 +38,10 @@ int main(int argc, char** argv) {
     pp.GetAllWaypoints(waypoints);
     int visualizing_target_idx;
     while (ros::ok()) {
-        
+        if (visualizing_target_idx == waypoints.size()-1) {
+            std::cout << error_check.err_avg() << std::endl;
+            return 0;
+        }
         if (msg4control.FrPoseReceived() == false) {
             ros::spinOnce();
             loop_rate.sleep();
