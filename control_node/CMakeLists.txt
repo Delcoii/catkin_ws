@@ -65,6 +65,7 @@ add_executable(control_node
     include/control_node/pid/pid.cpp
     include/control_node/stanley/stanley.cpp
     include/control_node/math_functions/math_functions.cpp
+    include/control_node/error_calculate/error_calculate.cpp
 )
 
 
