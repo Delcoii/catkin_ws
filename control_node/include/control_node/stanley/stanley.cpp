@@ -107,7 +107,7 @@ double StanleyControl::GetSteeringValue() {
     return steering_val;
 }*/
 
-double StanleyControl::GetSteeringValue(geometry_msgs::PoseStamped _fr_pose, double _velocity) {
+double StanleyControl::SetSteer(geometry_msgs::PoseStamped _fr_pose, double _velocity) {
     FindTargetPoint(_fr_pose);
     GetPsi();
     GetArcTanTerm(_velocity);
@@ -123,6 +123,10 @@ double StanleyControl::GetSteeringValue(geometry_msgs::PoseStamped _fr_pose, dou
 
 double StanleyControl::distance_m() {
     return car_wypt_dist_m;
+}
+
+double StanleyControl::steer_val() {
+    return steering_val;
 }
 
 void StanleyControl::PrintValue() {

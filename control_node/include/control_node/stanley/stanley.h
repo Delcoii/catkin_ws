@@ -35,11 +35,12 @@ public:
     void FindTargetPoint(geometry_msgs::PoseStamped fr_pose);
     void GetPsi();
     void GetArcTanTerm(double _velocity);
-    double GetSteeringValue(geometry_msgs::PoseStamped _fr_pose, double velocity);
+    double SetSteer(geometry_msgs::PoseStamped _fr_pose, double velocity);
 
 
     int TargetWaypointIdx();
     double distance_m();
+    double steer_val();
     void PrintValue();    
 };
 

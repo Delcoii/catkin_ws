@@ -3,6 +3,7 @@
 #include "control_node/pid/pid.h"
 #include "control_node/stanley/stanley.h"
 #include "control_node/error_calculate/error_calculate.h"
+#include "control_node/pure_pursuit/PurePursuitControl.h"
 
 #define LOOP_HZ                 60.
 #define P_GAIN                  3.
@@ -27,12 +28,14 @@ int main(int argc, char** argv) {
 
     FollowingError error_check;
 
+    PurePursuitControl pp;
     StanleyControl stanley;
     PID longi_control = PID((1./LOOP_HZ), 1., 0., P_GAIN, D_GAIN, I_GAIN);
     double throttle;
     double steer;
     
     stanley.GetAllWaypoints(waypoints);
+    pp.GetAllWaypoints(waypoints);
     while (ros::ok()) {
         
         if (msg4control.FrPoseReceived() == false) {
@@ -46,14 +49,22 @@ int main(int argc, char** argv) {
         throttle = longi_control.calculate(TARGET_VELOCITY_MS, car_stat.velocity);
 
 
-        steer = stanley.GetSteeringValue(front_wheel_pose, car_stat.velocity);
-        
-
+        stanley.SetSteer(front_wheel_pose, car_stat.velocity);
+        pp.SetSteer(rear_wheel_pose);
+        if (car_stat.velocity < 5.) {      // if car is slower than 15m/s
+            steer = stanley.steer_val();
+            std::cout << "stanley\n";
+        }
+        else {                              // if car is faster..
+            steer = pp.steer_val();
+            std::cout << "pure pursuit\n";
+        }
+    
         msg4control.PubControlMsg(throttle, steer, 0.);
 
+        // stanley.PrintValue();
+        pp.PrintValue();
 
-
-        stanley.PrintValue();
         int target = stanley.TargetWaypointIdx();
         msg4control.PubVisMsg(waypoints[target]);   // visualize
         // use distance from stanley
