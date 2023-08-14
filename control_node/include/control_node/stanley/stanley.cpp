@@ -78,10 +78,12 @@ void StanleyControl::GetPsi() {
 void StanleyControl::GetArcTanTerm(double _velocity) {
     double direction_include_dist_m;
 
+    /*
     std::cout <<
         "tf y : " << target_wypt_tf.getOrigin().y() << "\n" <<
         "tf x : " << target_wypt_tf.getOrigin().x() << "\n" <<
     std::endl;
+    */
 
     if (target_wypt_tf.getOrigin().y() > 0) {
         direction_include_dist_m = car_wypt_dist_m;
@@ -95,6 +97,7 @@ void StanleyControl::GetArcTanTerm(double _velocity) {
         (_velocity + ARCTAN_TERM_MIN_VELOCITY))));
 }
 
+/*
 double StanleyControl::GetSteeringValue() {
     double steering_angle = psi_deg + arctan_term_deg;
     // double steering_angle = psi_deg;    // for testing
@@ -102,6 +105,24 @@ double StanleyControl::GetSteeringValue() {
     steering_val = map(steering_angle, MIN_STEERING_DEG, MAX_STEERING_DEG, 1.0, -1.0);
 
     return steering_val;
+}*/
+
+double StanleyControl::GetSteeringValue(geometry_msgs::PoseStamped _fr_pose, double _velocity) {
+    FindTargetPoint(_fr_pose);
+    GetPsi();
+    GetArcTanTerm(_velocity);
+
+    double steering_angle = psi_deg + arctan_term_deg;
+    // double steering_angle = psi_deg;    // for testing
+    steering_angle = CutMinMax(steering_angle, MIN_STEERING_DEG, MAX_STEERING_DEG);
+    steering_val = map(steering_angle, MIN_STEERING_DEG, MAX_STEERING_DEG, 1.0, -1.0);
+
+    return steering_val;
+}
+
+
+double StanleyControl::distance_m() {
+    return car_wypt_dist_m;
 }
 
 void StanleyControl::PrintValue() {
