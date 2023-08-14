@@ -7,7 +7,7 @@
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/PoseStamped.h>
 
-#define WINDOW_SIZE         5
+#define WINDOW_SIZE         20
 
 class FollowingError {
 
