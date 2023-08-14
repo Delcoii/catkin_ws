@@ -9,7 +9,7 @@ PurePursuitControl::PurePursuitControl() {
 
     wypt_pos_x = 0.;
     wypt_pos_y = 0.;
-    wypt_car_dist_m = 9999.;    // any big num.. 
+    wypt_car_dist_m = 99999.;    // any big num.. 
     wypt_yaw_rad = 0.;
 
     alpha_deg = 0.;
@@ -24,9 +24,53 @@ void PurePursuitControl::GetAllWaypoints(std::vector<std::vector<double>> wypts)
     waypoints = wypts;
 }
 
-void PurePursuitControl::UpdateWypt() {
-    if (ArrivedLKDist() == true) {
-        target_wypt_idx++;
+// find target point & calculate distance
+void PurePursuitControl::FindTargetPoint(geometry_msgs::PoseStamped _rr_pose) {
+
+    wypt_car_dist_m = 99999.;         // just a big number
+    double temp_dist;
+    int search_start = target_wypt_idx + SEARCH_IDX_RANGE;
+    int search_end = target_wypt_idx;
+    int max_idx = waypoints.size();
+    for (int idx = search_start; idx > search_end; idx--) {
+        if (idx < 0) {
+            continue;
+        }
+        else if (idx > max_idx-1) {
+            break;
+        }
+        // init waypoint by tf
+        tf::Transform wypt_tf;
+
+        // utm projection index x:[0], y:[1] 
+        wypt_tf.setOrigin(tf::Vector3(waypoints[idx][0], waypoints[idx][1], 0.));     
+        wypt_tf.setRotation(tf::Quaternion(0., 0., 0., 1.));
+        
+        // init front wheel by tf
+        tf::Transform rr_tf;
+        rr_tf.setOrigin(tf::Vector3(
+            _rr_pose.pose.position.x,
+            _rr_pose.pose.position.y,
+            _rr_pose.pose.position.z
+        ));
+        rr_tf.setRotation(tf::Quaternion(
+            _rr_pose.pose.orientation.x, _rr_pose.pose.orientation.y,
+            _rr_pose.pose.orientation.z, _rr_pose.pose.orientation.w
+        ));
+
+        wypt_tf = rr_tf.inverseTimes(wypt_tf);  // transform wypt_tf
+        
+        double wypt_x_from_fr = wypt_tf.getOrigin().x();
+        double wypt_y_from_fr = wypt_tf.getOrigin().y();
+
+        temp_dist = sqrt( pow(wypt_x_from_fr, 2) + pow(wypt_y_from_fr, 2) );
+
+        if (temp_dist < LOOKAHEAD_DIST) {
+            wypt_car_dist_m = temp_dist;
+            target_wypt_idx = idx;
+
+            break;
+        }
     }
 
     wypt_pos_x = waypoints[target_wypt_idx][0];
@@ -34,9 +78,10 @@ void PurePursuitControl::UpdateWypt() {
 }
 
 
+
 double PurePursuitControl::SetSteer(geometry_msgs::PoseStamped _rr_pose) {
 
-    UpdateWypt();
+    FindTargetPoint(_rr_pose);
     GetRearPos(_rr_pose);
     CalcWyptDist();
     CalcAlpha();
@@ -115,6 +160,12 @@ double PurePursuitControl::steer_val() {
     return steering_val;
 }
 
+
+int PurePursuitControl::target_idx() {
+    return target_wypt_idx;
+}
+
+
 void PurePursuitControl::PrintValue() {
     std::cout << 
         "vehicle rear pos x : " << vehicle_pos_x << "\n" <<
@@ -127,5 +178,6 @@ void PurePursuitControl::PrintValue() {
         "theta(deg) : " << theta_deg << "\n" <<
     std::endl;
 }   
+
 
 

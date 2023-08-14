@@ -38,7 +38,7 @@ public:
     double SetSteer(geometry_msgs::PoseStamped _fr_pose, double velocity);
 
 
-    int TargetWaypointIdx();
+    int target_idx();
     double distance_m();
     double steer_val();
     void PrintValue();    

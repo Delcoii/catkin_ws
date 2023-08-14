@@ -9,7 +9,7 @@
 #define P_GAIN                  3.
 #define I_GAIN                  0.
 #define D_GAIN                  1.
-#define TARGET_VELOCITY_MS      10.
+#define TARGET_VELOCITY_MS      20.
 
 
 int main(int argc, char** argv) {
@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
     
     stanley.GetAllWaypoints(waypoints);
     pp.GetAllWaypoints(waypoints);
+    int visualizing_target_idx;
     while (ros::ok()) {
         
         if (msg4control.FrPoseReceived() == false) {
@@ -52,21 +53,27 @@ int main(int argc, char** argv) {
         stanley.SetSteer(front_wheel_pose, car_stat.velocity);
         pp.SetSteer(rear_wheel_pose);
         if (car_stat.velocity < 5.) {      // if car is slower than 15m/s
+            
+            std::cout << "using stanley controller\n";
             steer = stanley.steer_val();
-            std::cout << "stanley\n";
+            visualizing_target_idx = stanley.target_idx();
+            msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
         }
         else {                              // if car is faster..
+            
+            std::cout << "using pure pursuit controller\n";
             steer = pp.steer_val();
-            std::cout << "pure pursuit\n";
+            visualizing_target_idx = pp.target_idx();
+            msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
         }
     
+
         msg4control.PubControlMsg(throttle, steer, 0.);
 
         // stanley.PrintValue();
         pp.PrintValue();
 
-        int target = stanley.TargetWaypointIdx();
-        msg4control.PubVisMsg(waypoints[target]);   // visualize
+        
         // use distance from stanley
         error_check.FilteredValue(stanley.distance_m());
         error_check.PubCrossTrackError();           // publish cross track err

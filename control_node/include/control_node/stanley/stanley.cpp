@@ -141,7 +141,7 @@ void StanleyControl::PrintValue() {
 }
 
 
-int StanleyControl::TargetWaypointIdx() {
+int StanleyControl::target_idx() {
     return target_wypt_idx;
 }
 

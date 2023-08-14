@@ -10,9 +10,11 @@
 
 #include "control_node/math_functions/math_functions.h"
 
-#define LOOKAHEAD_DIST      10.
-#define WHEEL_BASE_M        2.886
+#define LOOKAHEAD_DIST      15.
+#define SEARCH_IDX_RANGE    100
+
 #define MAX_STEERING_DEG    34.9999
+#define WHEEL_BASE_M        2.886
 
 class PurePursuitControl {
 
@@ -40,15 +42,17 @@ public:
     double SetSteer(geometry_msgs::PoseStamped _rr_pose);
 
     void GetAllWaypoints(std::vector<std::vector<double>> wypts);
+
+    void FindTargetPoint(geometry_msgs::PoseStamped _rr_pose);
     void GetRearPos(geometry_msgs::PoseStamped _rr_pose);
     void CalcWyptDist();
-    void UpdateWypt();
     void CalcAlpha();
     void CalcTheta();
 
     bool ArrivedLKDist();
 
     double steer_val();
+    int target_idx();
 
     void PrintValue();
 };
