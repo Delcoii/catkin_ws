@@ -19,7 +19,8 @@ int main(int argc, char** argv) {
 
     std::vector<std::vector<double>> waypoints;
     GetWaypoints(waypoints);
-    LatLon2Utm(waypoints);
+    // LatLon2Utm(waypoints);
+    WaypointRearrange(waypoints);
 
     ControlMsgs msg4control;
     control_node::CarlaEgoVehicleStatus car_stat;
@@ -38,6 +39,10 @@ int main(int argc, char** argv) {
     pp.GetAllWaypoints(waypoints);
     int visualizing_target_idx;
     while (ros::ok()) {
+        if (visualizing_target_idx == waypoints.size()-1) {
+            std::cout << error_check.err_avg() << std::endl;
+            return 0;
+        }
         
         if (msg4control.FrPoseReceived() == false) {
             ros::spinOnce();
@@ -52,31 +57,25 @@ int main(int argc, char** argv) {
 
         stanley.SetSteer(front_wheel_pose, car_stat.velocity);
         pp.SetSteer(rear_wheel_pose);
-        if (car_stat.velocity < 5.) {      // if car is slower than 15m/s
+        
             
-            std::cout << "using stanley controller\n";
-            steer = stanley.steer_val();
-            visualizing_target_idx = stanley.target_idx();
-            msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
-        }
-        else {                              // if car is faster..
-            
-            std::cout << "using pure pursuit controller\n";
-            steer = pp.steer_val();
-            visualizing_target_idx = pp.target_idx();
-            msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
-        }
+        std::cout << "using pure pursuit controller\n";
+        steer = pp.steer_val();
+        visualizing_target_idx = pp.target_idx();
+        msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
     
 
-        msg4control.PubControlMsg(throttle, steer, 0.);
+        // msg4control.PubControlMsg(throttle, steer, 0.);
+        msg4control.PubControlMsg(throttle, 0., 0.);
 
+        std::cout << visualizing_target_idx << std::endl;
         // stanley.PrintValue();
-        pp.PrintValue();
+        // pp.PrintValue();
 
-        
         // use distance from stanley
         error_check.FilteredValue(stanley.distance_m());
-        error_check.PubCrossTrackError();           // publish cross track err
+        error_check.PubCrossTrackError();   // publish cross track err
+
 
         ros::spinOnce();
         loop_rate.sleep();

@@ -15,7 +15,11 @@ class FollowingError {
     ros::Publisher error_pub;
 
     double car_waypoint_dist_m;
-    std::vector<double> window;
+    
+    std::vector<double> window;     // for moving average filter
+
+    double average;                 // for normal average filter
+    double sample_count;
     
     std_msgs::Float64 cross_track_error_m;
 
@@ -25,6 +29,7 @@ public:
     void PutInWindow();
 
     double FilteredValue(double dist_m);
+    double err_avg();
 
     void PubCrossTrackError();
 

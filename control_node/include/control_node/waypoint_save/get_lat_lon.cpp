@@ -6,9 +6,9 @@
 
 void GetWaypoints (std::vector<std::vector<double>>& container) {
 
-    std::string csv_loc = "/home/delcoii/waypoints/lane4th.csv";
-    std::string start_col = "latitude";
-    std::string end_col = "longitude";
+    std::string csv_loc = "/home/delcoii/bagfiles/reference_bag/odo.csv";
+    std::string start_col = "field.pose.pose.position.x";
+    std::string end_col = "field.pose.pose.position.y";
 
     CSV2Data(csv_loc, start_col, end_col, container);
 

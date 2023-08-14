@@ -3,6 +3,9 @@
 FollowingError::FollowingError() {
     error_pub = nh.advertise<std_msgs::Float64>("cross_track_error", 100);
     window = std::vector<double> (WINDOW_SIZE, 0);
+
+    average = 0;
+    sample_count = 0;
 }
 
 void FollowingError::GetCrossTrackError(double dist_m) {
@@ -25,7 +28,20 @@ double FollowingError::FilteredValue(double dist_m) {
         sum += window[idx];
     }
     cross_track_error_m.data = sum / (double)(WINDOW_SIZE);
+
+
+    sample_count++;
+
+    // calculating alpha = k-1 / k
+    double alpha = (double)(sample_count-1) / (double)sample_count;
+    // calculating average
+    average = alpha * average + (1.-alpha) * cross_track_error_m.data;
+
     return cross_track_error_m.data;
+}
+
+double FollowingError::err_avg() {
+    return average;
 }
 
 void FollowingError::PubCrossTrackError() {

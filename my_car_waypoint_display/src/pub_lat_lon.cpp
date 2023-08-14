@@ -11,15 +11,15 @@
 #define POSITION_X              0
 #define POSITION_Y              1
 #define POSITION_Z              2
-#define ORIENTATION_X       3
-#define ORIENTATION_Y       4
-#define ORIENTATION_Z       5
-#define ORIENTATION_W       6
+#define ORIENTATION_X           3
+#define ORIENTATION_Y           4
+#define ORIENTATION_Z           5
+#define ORIENTATION_W           6
 
-#define WYPT_DIST_M           0.2
+#define WYPT_DIST_M             0.6
 
-#define REF_LATITUDE        0.
-#define REF_LONGITUDE       0.
+#define REF_LATITUDE            0.
+#define REF_LONGITUDE           0.
 
 int CSV2Data(std::string csv_location, std::string  reading_col_start_title, std::string reading_col_end_title, std::vector<std::vector<double>> &data_vec);
 
@@ -31,9 +31,9 @@ int main (int argc, char** argv) {
 
 
     std::vector<std::vector<double>> waypoints;
-    std::string wypt_csv_loc = "/home/delcoii/waypoints/lane4th.csv";
-    std::string wypt_start_col = "latitude";
-    std::string wypt_end_col = "longitude";
+    std::string wypt_csv_loc = "/home/delcoii/bagfiles/reference_bag/odo.csv";
+    std::string wypt_start_col = "field.pose.pose.position.x";
+    std::string wypt_end_col = "field.pose.pose.position.y";
 
 
     
@@ -41,8 +41,9 @@ int main (int argc, char** argv) {
 
     
     CSV2Data(wypt_csv_loc, wypt_start_col, wypt_end_col, waypoints);
+    // WaypointRearrange(waypoints);
 
-
+    /*
     // utm projection
     lanelet::Origin origin({REF_LATITUDE, REF_LONGITUDE});
     auto projector = lanelet::projection::UtmProjector(origin);
@@ -57,7 +58,7 @@ int main (int argc, char** argv) {
         waypoints[idx][POSITION_Y] = utm_coords.y();
     }
     std::cout << "projection complete, waypoint size : " << waypoints.size() << std::endl;
-
+    */
 
 
     ros::init (argc, argv, "my_car_waypoint_publish");

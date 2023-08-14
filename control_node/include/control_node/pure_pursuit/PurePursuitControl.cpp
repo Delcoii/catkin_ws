@@ -31,13 +31,13 @@ void PurePursuitControl::FindTargetPoint(geometry_msgs::PoseStamped _rr_pose) {
     double temp_dist;
     int search_start = target_wypt_idx + SEARCH_IDX_RANGE;
     int search_end = target_wypt_idx;
-    int max_idx = waypoints.size();
+    int max_idx = waypoints.size()-1;
     for (int idx = search_start; idx > search_end; idx--) {
         if (idx < 0) {
-            continue;
-        }
-        else if (idx > max_idx-1) {
             break;
+        }
+        else if (idx > max_idx) {
+            continue;
         }
         // init waypoint by tf
         tf::Transform wypt_tf;

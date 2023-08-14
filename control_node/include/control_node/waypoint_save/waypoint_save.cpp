@@ -5,7 +5,7 @@
 
 void GetWaypoints (std::vector<std::vector<double>>& container) {
 
-    std::string csv_loc = "/home/delcoii/waypoints/waypoints.csv";
+    std::string csv_loc = "/home/delcoii/bagfiles/reference_bag/odo.csv";
     std::string start_col = "field.pose.pose.position.x";
     std::string end_col = "field.pose.pose.position.y";
 
