@@ -1,6 +1,8 @@
 // save latitude, longitude
 // executable linked to following_lat_lon.cpp
 
+
+
 #include "control_node/waypoint_save/waypoint_save.h"
 
 
@@ -141,3 +143,6 @@ void LatLon2Utm(std::vector<std::vector<double>>& wypts) {
     std::cout << "projection complete, waypoint size : " << wypts.size() << std::endl;
 }
 
+void VelocityProfile(std::vector<std::vector<double>>& container) {
+    
+}
