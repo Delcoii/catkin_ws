@@ -67,6 +67,7 @@ add_executable(control_node
     include/control_node/pure_pursuit/PurePursuitControl.cpp
     include/control_node/math_functions/math_functions.cpp
     include/control_node/error_calculate/error_calculate.cpp
+    include/control_node/MovingAverage/MovingAverage.cpp
 )
 
 

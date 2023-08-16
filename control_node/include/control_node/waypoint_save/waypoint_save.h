@@ -24,6 +24,8 @@
 #include "lanelet2_core/LaneletMap.h"
 #include "lanelet2_projection/UTM.h"
 
+#include "control_node/MovingAverage/MovingAverage.h"
+#include "control_node/math_functions/math_functions.h"
 
 #define POSITION_X              0
 #define POSITION_Y              1
@@ -42,6 +44,18 @@
 
 #define WYPT_DIST_M             0.2
 
+
+#define LOCAL_X                 0
+#define LOCAL_Y                 1
+#define TARGET_VEL_IDX          2
+#define CURVATURE_IDX           3
+
+#define MAX_LATERAL_ACCEL_MS2   2.0
+#define MOV_AVG_WIN_SIZE        40
+#define STRAIGHT_SPEED_MS       55.
+#define IDX_DIFF                15
+// #define MIN_KAPPA               0.015
+
 // file reading func
 void GetWaypoints(std::vector<std::vector<double>>& container);
 
@@ -52,6 +66,6 @@ void WaypointRearrange (std::vector<std::vector<double>> &data_vec);
 
 void LatLon2Utm(std::vector<std::vector<double>>& wytps);
 
-void VelocityProfile(std::vector<std::vector<double>>& container);
+void SetVelocityProfile(std::vector<std::vector<double>>& container);
 
 #endif // __WAYPOINT_SAVE_H__

@@ -1,9 +1,7 @@
 // save latitude, longitude
 // executable linked to following_lat_lon.cpp
-
-
-
 #include "control_node/waypoint_save/waypoint_save.h"
+
 
 
 void GetWaypoints (std::vector<std::vector<double>>& container) {
@@ -143,6 +141,139 @@ void LatLon2Utm(std::vector<std::vector<double>>& wypts) {
     std::cout << "projection complete, waypoint size : " << wypts.size() << std::endl;
 }
 
-void VelocityProfile(std::vector<std::vector<double>>& container) {
+void SetVelocityProfile(std::vector<std::vector<double>>& container) {
     
+    MovingAverage mov_avg(MOV_AVG_WIN_SIZE);
+    std::vector<std::vector<double>> velocity_container (1, std::vector<double> (2, 0));
+    double prev_kappa;
+
+    /* calculating curvature(kappa) */
+    // exclude very first & last index
+    for (int idx = IDX_DIFF; idx < container.size()-IDX_DIFF; idx++) {
+        arma::vec prev_now(3, arma::fill::zeros);
+        arma::vec now_prev(3, arma::fill::zeros);
+        arma::vec next_now(3, arma::fill::zeros);
+        arma::vec next_prev(3, arma::fill::zeros);
+
+        prev_now = {
+            container[idx-IDX_DIFF][LOCAL_X] - container[idx][LOCAL_X],
+            container[idx-IDX_DIFF][LOCAL_Y] - container[idx][LOCAL_Y],
+            0.};
+        
+        now_prev = {
+            container[idx][LOCAL_X] - container[idx-IDX_DIFF][LOCAL_X],
+            container[idx][LOCAL_Y] - container[idx-IDX_DIFF][LOCAL_Y],
+            0.};
+        
+        next_now = {
+            container[idx+IDX_DIFF][LOCAL_X] - container[idx][LOCAL_X],
+            container[idx+IDX_DIFF][LOCAL_Y] - container[idx][LOCAL_Y],
+            0.};
+        
+        next_prev = {
+            container[idx+IDX_DIFF][LOCAL_X] - container[idx-IDX_DIFF][LOCAL_X],
+            container[idx+IDX_DIFF][LOCAL_Y] - container[idx-IDX_DIFF][LOCAL_Y],
+            0.};
+        
+        std::cout << std::fixed;
+        std::cout.precision(4);
+        std::cout <<
+            "\n\nidx : " << idx << "\n" <<
+            "prev-now : " << prev_now(0) << " " << prev_now(1) << "\n" <<
+            "now-prev : " << now_prev(0) << " " << now_prev(1) << "\n" <<
+            "next-now : " << next_now(0) << " " << next_now(1) << "\n" <<
+            "next-prev : " << next_prev(0) << " " << next_prev(1) << "\n" <<
+        std::endl;
+
+
+        double boonja = 2. * arma::norm(arma::cross(next_now, prev_now), 2);
+        double boonmo = arma::norm(next_now, 2) * arma::norm(now_prev, 2) * arma::norm(next_prev, 2);
+        double kappa = boonja / boonmo;
+        double max_vel_ms;
+
+
+        std::vector<double> temp (2, 0);
+
+        /*
+        if (kappa < MIN_KAPPA) {
+            max_vel_ms = STRAIGHT_SPEED_MS;
+
+            std::cout << "before filt : " << max_vel_ms << "\n";
+
+            max_vel_ms = mov_avg.Filter(max_vel_ms);
+            temp[0] = max_vel_ms;
+            temp[1] = kappa;
+
+            std::cout <<
+                "boonja : " << boonja << "\n" << 
+                "boonmo : " << boonmo << "\n" <<
+                "kappa : " << kappa << "\n" <<
+                "vel : " << max_vel_ms << "\n" <<
+            std::endl;
+
+            velocity_container.push_back(temp);
+        }
+        else {
+            max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
+
+            std::cout << "before filt : " << max_vel_ms << "\n";
+        
+            max_vel_ms = mov_avg.Filter(max_vel_ms);
+            temp[0] = max_vel_ms;
+            temp[1] = kappa;
+
+            std::cout <<
+                "boonja : " << boonja << "\n" << 
+                "boonmo : " << boonmo << "\n" <<
+                "kappa : " << kappa << "\n" <<
+                "vel : " << max_vel_ms << "\n" <<
+            std::endl;
+
+            velocity_container.push_back(temp);
+        }*/
+
+        // max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (filtered_kappa));
+        // temp[0] = max_vel_ms;
+        // temp[1] = filtered_kappa;
+
+        max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
+        max_vel_ms = CutMinMax(max_vel_ms, 0.0, STRAIGHT_SPEED_MS);
+        max_vel_ms = mov_avg.Filter(max_vel_ms);   
+        temp[0] = max_vel_ms;
+        temp[1] = kappa;
+        
+
+
+        std::cout <<
+            "boonja : " << boonja << "\n" << 
+            "boonmo : " << boonmo << "\n" <<
+            "kappa : " << kappa << "\n" <<
+            "vel : " << max_vel_ms << "\n" <<
+        std::endl;
+
+        velocity_container.push_back(temp);
+
+        prev_kappa = kappa;
+    }
+
+    // fill first & last index velocity
+    
+
+    for(int idx = IDX_DIFF; idx > 0; idx--) {
+        velocity_container[IDX_DIFF-1] = velocity_container[IDX_DIFF];
+
+        velocity_container.push_back(velocity_container[velocity_container.size()-1]);
+    }
+
+    int len = velocity_container.size();
+    /*
+    std::cout << "len : " << len << "\n";
+    std::cout << "cont : " << container.size() << "\n";
+    std::cout << velocity_container[50][1];
+    */
+
+    for (int idx = 0; idx < velocity_container.size(); idx++) {
+        container[idx].push_back(velocity_container[idx][0]);
+        container[idx].push_back(velocity_container[idx][1]);
+    }
 }

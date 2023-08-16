@@ -20,6 +20,7 @@ int main(int argc, char** argv) {
     std::vector<std::vector<double>> waypoints;
     GetWaypoints(waypoints);
     LatLon2Utm(waypoints);
+    SetVelocityProfile(waypoints);
 
     ControlMsgs msg4control;
     control_node::CarlaEgoVehicleStatus car_stat;
@@ -61,6 +62,7 @@ int main(int argc, char** argv) {
             steer = stanley.steer_val();
             visualizing_target_idx = stanley.target_idx();
             msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
+            stanley.PrintValue();
         }
         else {                              // if car is faster..
             
@@ -68,13 +70,18 @@ int main(int argc, char** argv) {
             steer = pp.steer_val();
             visualizing_target_idx = pp.target_idx();
             msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
+            pp.PrintValue();
         }
     
-
+        
         msg4control.PubControlMsg(throttle, steer, 0.);
 
-        // stanley.PrintValue();
-        pp.PrintValue();
+        visualizing_target_idx = stanley.target_idx();
+        std::cout <<
+            "idx : " << visualizing_target_idx << "\n" << 
+            "target vel(m/s) : " << waypoints[visualizing_target_idx][TARGET_VEL_IDX] << "\n" <<
+            "curvature : " << waypoints[visualizing_target_idx][CURVATURE_IDX] << "\n" << 
+        std::endl;
 
         
         // use distance from stanley
