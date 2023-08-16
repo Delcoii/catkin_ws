@@ -10,11 +10,11 @@
 
 #include "control_node/math_functions/math_functions.h"
 
-#define LOOKAHEAD_DIST_MIN  5.
-#define LOOKAHEAD_GRADIENT  2.
+#define LOOKAHEAD_DIST_MIN  15.
+#define LOOKAHEAD_GRADIENT  1.
 #define SEARCH_IDX_RANGE    100
 
-#define MAX_STEERING_DEG    34.9999
+#define MAX_STEERING_DEG    34.999999642
 #define WHEEL_BASE_M        2.886
 
 class PurePursuitControl {

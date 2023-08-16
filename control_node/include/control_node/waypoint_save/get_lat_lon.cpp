@@ -143,14 +143,12 @@ void LatLon2Utm(std::vector<std::vector<double>>& wypts) {
 
 void SetVelocityProfile(std::vector<std::vector<double>>& container) {
     
-    MovingAverage mov_avg(MOV_AVG_WIN_SIZE, STRAIGHT_SPEED_MS);
-    std::vector<std::vector<double>> velocity_container;
+    // MovingAverage speed_mov_avg(SPEED_AVG_WINDOW_SIZE, STRAIGHT_SPEED_MS);
+    // MovingAverage kappa_mov_avg(KAPPA_AVG_WINDOW_SIZE, 0.);
+    std::vector<double> velocity_container;
 
     for (int idx = 0; idx < IDX_DIFF; idx++) {
-        std::vector<double> temp(2);
-        temp[0] = STRAIGHT_SPEED_MS;
-        temp[1] = 0.;
-        velocity_container.push_back(temp);
+        velocity_container.push_back(STRAIGHT_SPEED_MS);
     }
 
     /* calculating curvature(kappa) */
@@ -185,16 +183,13 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
         double boonja = 2. * arma::norm(arma::cross(next_now, prev_now), 2);
         double boonmo = arma::norm(next_now, 2) * arma::norm(now_prev, 2) * arma::norm(next_prev, 2);
         double kappa = boonja / boonmo;
+        // kappa = kappa_mov_avg.Filter(kappa);
         
         double max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
         max_vel_ms = CutMinMax(max_vel_ms, 0.0, STRAIGHT_SPEED_MS);
-        max_vel_ms = mov_avg.Filter(max_vel_ms); 
+        // max_vel_ms = speed_mov_avg.Filter(max_vel_ms); 
 
-        std::vector<double> temp (2, 0);  
-        temp[0] = max_vel_ms;
-        temp[1] = kappa;
-        velocity_container.push_back(temp);
-        
+        velocity_container.push_back(max_vel_ms);
         
         std::cout <<
             "\n\nidx : " << idx << "\n" <<
@@ -213,10 +208,15 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
         velocity_container.push_back(velocity_container[velocity_container.size()-1]);
     }
 
-    std::cout << "velocity set total size : " << velocity_container.size() << std::endl;
+    int vel_len = velocity_container.size();
+    std::cout << "velocity set total size : " << vel_len << std::endl;
+
+    std::vector<double> temp = velocity_container;
+    for (int idx = (GAUSSIAN_WINDOW_SIZE/2); idx < vel_len-(GAUSSIAN_WINDOW_SIZE/2); idx++) {
+        velocity_container[idx] = GaussianFilter(temp, GAUSSIAN_WINDOW_SIZE, idx);
+    }
 
     for (int idx = 0; idx < container.size(); idx++) {
-        container[idx].push_back(velocity_container[idx][0]);
-        container[idx].push_back(velocity_container[idx][1]);
+        container[idx].push_back(velocity_container[idx]);
     }
 }

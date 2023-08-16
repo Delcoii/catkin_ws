@@ -7,7 +7,7 @@
  * include 경로 지정.. ros library including에 대한 이해 필요 ㅠㅠ 
  */
 
-#include "control_node/MovingAverage/MovingAverage.h"
+#include "control_node/Filters/Filters.h"
 
 MovingAverage::MovingAverage(int window_size, double ref) :
     window(window_size, ref) {}
@@ -23,4 +23,25 @@ double MovingAverage::Filter(double input) {
         sum += window[idx];    
     }
     return sum / window.size();
+}
+
+
+
+
+
+double GaussianFilter(std::vector<double> vec, int window_size, int idx) {
+    double sum = 0.;
+    if (window_size % 2 == 0) {
+        for (int i = idx-(window_size/2); i < idx+(window_size/2); i++) {
+            sum += vec[i];
+        }
+        return sum / (double)window_size;
+    }
+
+    else {
+        for (int i = idx-(window_size/2); i <= idx+(window_size/2); i++) {
+            sum += vec[i];
+        }
+        return sum / (double)window_size;
+    }
 }

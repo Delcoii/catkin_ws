@@ -1,14 +1,15 @@
 #include "control_node/ControlMsgs/ControlMsgs.h"
 #include "control_node/waypoint_save/waypoint_save.h"
-#include "control_node/pid/pid.h"
+#include "control_node/longitudinal_control/longitudinal_control.h"
 #include "control_node/stanley/stanley.h"
 #include "control_node/error_calculate/error_calculate.h"
 #include "control_node/pure_pursuit/PurePursuitControl.h"
 
 #define LOOP_HZ                 60.
-#define P_GAIN                  3.
+#define P_GAIN                  10.
 #define I_GAIN                  0.
-#define D_GAIN                  1.
+#define D_GAIN                  0.
+#define SWITCH_VEL_MS           10.
 // #define TARGET_VELOCITY_MS      20.
 
 
@@ -31,36 +32,37 @@ int main(int argc, char** argv) {
 
     PurePursuitControl pp;
     StanleyControl stanley;
-    PID longi_control = PID((1./LOOP_HZ), 1., 0., P_GAIN, D_GAIN, I_GAIN);
+    LongitudinalControl longi_control((1./LOOP_HZ), 1., -1., P_GAIN, D_GAIN, I_GAIN);
     double throttle;
     double brake;
     double steer;
     
     stanley.GetAllWaypoints(waypoints);
     pp.GetAllWaypoints(waypoints);
-    int visualizing_target_idx;
+    int visualizing_target_idx = 0;
     while (ros::ok()) {
 
-        if (visualizing_target_idx == waypoints.size()-1) {
-            std::cout << error_check.err_avg() << std::endl;
-            return 0;
-        }
-
-
+    
         if (msg4control.FrPoseReceived() == false) {
             ros::spinOnce();
             loop_rate.sleep();
             continue;
         }
+        
+
+        if (visualizing_target_idx >= waypoints.size()-5) {
+            std::cout << error_check.err_avg() << std::endl;
+            return 0;
+        }
+
         msg4control.SetValue(car_stat, front_wheel_pose, rear_wheel_pose);
-
-
-        throttle = longi_control.calculate(waypoints[stanley.target_idx()][TARGET_VEL_IDX], car_stat.velocity);
+        longi_control.SetThrottleBrake(waypoints[stanley.target_idx()][TARGET_VEL_IDX], car_stat.velocity);
+        longi_control.SetVal(throttle, brake);
 
 
         stanley.SetSteer(front_wheel_pose, car_stat.velocity);
         pp.SetSteer(rear_wheel_pose, car_stat.velocity);
-        if (car_stat.velocity < 5.) {      // if car is slower than 15m/s
+        if (car_stat.velocity < SWITCH_VEL_MS) {      // if car is slower than 15m/s
             
             std::cout << "using stanley controller\n";
             steer = stanley.steer_val();
@@ -78,14 +80,13 @@ int main(int argc, char** argv) {
         }
     
         
-        msg4control.PubControlMsg(throttle, steer, 0.);
+        msg4control.PubControlMsg(throttle, steer, brake);
 
 
         visualizing_target_idx = stanley.target_idx();
         std::cout <<
             "idx : " << visualizing_target_idx << "\n" << 
-            "target vel(m/s) : " << waypoints[visualizing_target_idx][TARGET_VEL_IDX] << "\n" <<
-            "curvature : " << waypoints[visualizing_target_idx][CURVATURE_IDX] << "\n" << 
+            "target vel(km/h) : " << waypoints[visualizing_target_idx][TARGET_VEL_IDX]*3.6 << "\n" <<
         std::endl;
 
         

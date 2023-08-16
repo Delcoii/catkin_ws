@@ -24,7 +24,7 @@
 #include "lanelet2_core/LaneletMap.h"
 #include "lanelet2_projection/UTM.h"
 
-#include "control_node/MovingAverage/MovingAverage.h"
+#include "control_node/Filters/Filters.h"
 #include "control_node/math_functions/math_functions.h"
 
 #define POSITION_X              0
@@ -50,11 +50,13 @@
 #define TARGET_VEL_IDX          2
 #define CURVATURE_IDX           3
 
-#define MAX_LATERAL_ACCEL_MS2   2.0         // maximum comfort value
-#define MOV_AVG_WIN_SIZE        50
-#define STRAIGHT_SPEED_MS       55.
+#define MAX_LATERAL_ACCEL_MS2   2.0
+#define STRAIGHT_SPEED_MS       41.6        // 150km/h
 #define IDX_DIFF                20
-// #define MIN_KAPPA               0.015
+
+#define SPEED_AVG_WINDOW_SIZE   400
+#define KAPPA_AVG_WINDOW_SIZE   400
+#define GAUSSIAN_WINDOW_SIZE    100
 
 // file reading func
 void GetWaypoints(std::vector<std::vector<double>>& container);

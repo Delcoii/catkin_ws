@@ -10,14 +10,15 @@
 #include <vector>
 
 class MovingAverage {
-
-    std::vector<double> window;
-
-public:
-
-    MovingAverage(int window_size, double ref);
     
+    std::vector<double> window;
+public:
+    MovingAverage(int window_size, double ref);
     double Filter(double input);
 };
+
+
+
+double GaussianFilter(std::vector<double> vec, int window_size, int idx);
 
 #endif // __MOVING_AVERAGE_H__
