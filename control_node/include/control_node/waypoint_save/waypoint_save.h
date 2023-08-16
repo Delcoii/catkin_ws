@@ -50,10 +50,10 @@
 #define TARGET_VEL_IDX          2
 #define CURVATURE_IDX           3
 
-#define MAX_LATERAL_ACCEL_MS2   2.0
-#define MOV_AVG_WIN_SIZE        40
+#define MAX_LATERAL_ACCEL_MS2   2.0         // maximum comfort value
+#define MOV_AVG_WIN_SIZE        50
 #define STRAIGHT_SPEED_MS       55.
-#define IDX_DIFF                15
+#define IDX_DIFF                20
 // #define MIN_KAPPA               0.015
 
 // file reading func

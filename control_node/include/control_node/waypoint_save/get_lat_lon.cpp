@@ -194,47 +194,6 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
 
         std::vector<double> temp (2, 0);
 
-        /*
-        if (kappa < MIN_KAPPA) {
-            max_vel_ms = STRAIGHT_SPEED_MS;
-
-            std::cout << "before filt : " << max_vel_ms << "\n";
-
-            max_vel_ms = mov_avg.Filter(max_vel_ms);
-            temp[0] = max_vel_ms;
-            temp[1] = kappa;
-
-            std::cout <<
-                "boonja : " << boonja << "\n" << 
-                "boonmo : " << boonmo << "\n" <<
-                "kappa : " << kappa << "\n" <<
-                "vel : " << max_vel_ms << "\n" <<
-            std::endl;
-
-            velocity_container.push_back(temp);
-        }
-        else {
-            max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
-
-            std::cout << "before filt : " << max_vel_ms << "\n";
-        
-            max_vel_ms = mov_avg.Filter(max_vel_ms);
-            temp[0] = max_vel_ms;
-            temp[1] = kappa;
-
-            std::cout <<
-                "boonja : " << boonja << "\n" << 
-                "boonmo : " << boonmo << "\n" <<
-                "kappa : " << kappa << "\n" <<
-                "vel : " << max_vel_ms << "\n" <<
-            std::endl;
-
-            velocity_container.push_back(temp);
-        }*/
-
-        // max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (filtered_kappa));
-        // temp[0] = max_vel_ms;
-        // temp[1] = filtered_kappa;
 
         max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
         max_vel_ms = CutMinMax(max_vel_ms, 0.0, STRAIGHT_SPEED_MS);
@@ -266,11 +225,6 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
     }
 
     int len = velocity_container.size();
-    /*
-    std::cout << "len : " << len << "\n";
-    std::cout << "cont : " << container.size() << "\n";
-    std::cout << velocity_container[50][1];
-    */
 
     for (int idx = 0; idx < velocity_container.size(); idx++) {
         container[idx].push_back(velocity_container[idx][0]);
