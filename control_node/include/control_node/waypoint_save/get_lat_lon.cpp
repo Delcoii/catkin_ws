@@ -143,9 +143,15 @@ void LatLon2Utm(std::vector<std::vector<double>>& wypts) {
 
 void SetVelocityProfile(std::vector<std::vector<double>>& container) {
     
-    MovingAverage mov_avg(MOV_AVG_WIN_SIZE);
-    std::vector<std::vector<double>> velocity_container (1, std::vector<double> (2, 0));
-    double prev_kappa;
+    MovingAverage mov_avg(MOV_AVG_WIN_SIZE, STRAIGHT_SPEED_MS);
+    std::vector<std::vector<double>> velocity_container;
+
+    for (int idx = 0; idx < IDX_DIFF; idx++) {
+        std::vector<double> temp(2);
+        temp[0] = STRAIGHT_SPEED_MS;
+        temp[1] = 0.;
+        velocity_container.push_back(temp);
+    }
 
     /* calculating curvature(kappa) */
     // exclude very first & last index
@@ -158,75 +164,58 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
         prev_now = {
             container[idx-IDX_DIFF][LOCAL_X] - container[idx][LOCAL_X],
             container[idx-IDX_DIFF][LOCAL_Y] - container[idx][LOCAL_Y],
-            0.};
-        
+            0.
+        };
         now_prev = {
             container[idx][LOCAL_X] - container[idx-IDX_DIFF][LOCAL_X],
             container[idx][LOCAL_Y] - container[idx-IDX_DIFF][LOCAL_Y],
-            0.};
-        
+            0.
+        };        
         next_now = {
             container[idx+IDX_DIFF][LOCAL_X] - container[idx][LOCAL_X],
             container[idx+IDX_DIFF][LOCAL_Y] - container[idx][LOCAL_Y],
-            0.};
-        
+            0.
+        };        
         next_prev = {
             container[idx+IDX_DIFF][LOCAL_X] - container[idx-IDX_DIFF][LOCAL_X],
             container[idx+IDX_DIFF][LOCAL_Y] - container[idx-IDX_DIFF][LOCAL_Y],
-            0.};
-        
-        std::cout << std::fixed;
-        std::cout.precision(4);
-        std::cout <<
-            "\n\nidx : " << idx << "\n" <<
-            "prev-now : " << prev_now(0) << " " << prev_now(1) << "\n" <<
-            "now-prev : " << now_prev(0) << " " << now_prev(1) << "\n" <<
-            "next-now : " << next_now(0) << " " << next_now(1) << "\n" <<
-            "next-prev : " << next_prev(0) << " " << next_prev(1) << "\n" <<
-        std::endl;
-
+            0.
+        };        
 
         double boonja = 2. * arma::norm(arma::cross(next_now, prev_now), 2);
         double boonmo = arma::norm(next_now, 2) * arma::norm(now_prev, 2) * arma::norm(next_prev, 2);
         double kappa = boonja / boonmo;
-        double max_vel_ms;
-
-
-        std::vector<double> temp (2, 0);
-
-
-        max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
+        
+        double max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
         max_vel_ms = CutMinMax(max_vel_ms, 0.0, STRAIGHT_SPEED_MS);
-        max_vel_ms = mov_avg.Filter(max_vel_ms);   
+        max_vel_ms = mov_avg.Filter(max_vel_ms); 
+
+        std::vector<double> temp (2, 0);  
         temp[0] = max_vel_ms;
         temp[1] = kappa;
+        velocity_container.push_back(temp);
         
-
-
+        
         std::cout <<
+            "\n\nidx : " << idx << "\n" <<
             "boonja : " << boonja << "\n" << 
             "boonmo : " << boonmo << "\n" <<
             "kappa : " << kappa << "\n" <<
             "vel : " << max_vel_ms << "\n" <<
-        std::endl;
-
-        velocity_container.push_back(temp);
-
-        prev_kappa = kappa;
+            velocity_container.size() << "\n" <<
+        std::endl;   
     }
 
-    // fill first & last index velocity
-    
 
+    // fill start & end index velocity
     for(int idx = IDX_DIFF; idx > 0; idx--) {
-        velocity_container[IDX_DIFF-1] = velocity_container[IDX_DIFF];
-
+        velocity_container[idx-1] = velocity_container[idx];
         velocity_container.push_back(velocity_container[velocity_container.size()-1]);
     }
 
-    int len = velocity_container.size();
+    std::cout << "velocity set total size : " << velocity_container.size() << std::endl;
 
-    for (int idx = 0; idx < velocity_container.size(); idx++) {
+    for (int idx = 0; idx < container.size(); idx++) {
         container[idx].push_back(velocity_container[idx][0]);
         container[idx].push_back(velocity_container[idx][1]);
     }

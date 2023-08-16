@@ -9,8 +9,8 @@
 
 #include "control_node/MovingAverage/MovingAverage.h"
 
-MovingAverage::MovingAverage(int window_size) :
-    window(window_size, 0) {}
+MovingAverage::MovingAverage(int window_size, double ref) :
+    window(window_size, ref) {}
 
 
 double MovingAverage::Filter(double input) {

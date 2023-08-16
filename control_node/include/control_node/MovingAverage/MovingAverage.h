@@ -15,7 +15,7 @@ class MovingAverage {
 
 public:
 
-    MovingAverage(int window_size);
+    MovingAverage(int window_size, double ref);
     
     double Filter(double input);
 };

@@ -9,7 +9,7 @@
 #define P_GAIN                  3.
 #define I_GAIN                  0.
 #define D_GAIN                  1.
-#define TARGET_VELOCITY_MS      20.
+// #define TARGET_VELOCITY_MS      20.
 
 
 int main(int argc, char** argv) {
@@ -33,16 +33,20 @@ int main(int argc, char** argv) {
     StanleyControl stanley;
     PID longi_control = PID((1./LOOP_HZ), 1., 0., P_GAIN, D_GAIN, I_GAIN);
     double throttle;
+    double brake;
     double steer;
     
     stanley.GetAllWaypoints(waypoints);
     pp.GetAllWaypoints(waypoints);
     int visualizing_target_idx;
     while (ros::ok()) {
+
         if (visualizing_target_idx == waypoints.size()-1) {
             std::cout << error_check.err_avg() << std::endl;
             return 0;
         }
+
+
         if (msg4control.FrPoseReceived() == false) {
             ros::spinOnce();
             loop_rate.sleep();
@@ -51,11 +55,11 @@ int main(int argc, char** argv) {
         msg4control.SetValue(car_stat, front_wheel_pose, rear_wheel_pose);
 
 
-        throttle = longi_control.calculate(TARGET_VELOCITY_MS, car_stat.velocity);
+        throttle = longi_control.calculate(waypoints[stanley.target_idx()][TARGET_VEL_IDX], car_stat.velocity);
 
 
         stanley.SetSteer(front_wheel_pose, car_stat.velocity);
-        pp.SetSteer(rear_wheel_pose);
+        pp.SetSteer(rear_wheel_pose, car_stat.velocity);
         if (car_stat.velocity < 5.) {      // if car is slower than 15m/s
             
             std::cout << "using stanley controller\n";
@@ -75,6 +79,7 @@ int main(int argc, char** argv) {
     
         
         msg4control.PubControlMsg(throttle, steer, 0.);
+
 
         visualizing_target_idx = stanley.target_idx();
         std::cout <<

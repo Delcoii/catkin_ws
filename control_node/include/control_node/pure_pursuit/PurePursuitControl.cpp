@@ -24,9 +24,26 @@ void PurePursuitControl::GetAllWaypoints(std::vector<std::vector<double>> wypts)
     waypoints = wypts;
 }
 
-// find target point & calculate distance
-void PurePursuitControl::FindTargetPoint(geometry_msgs::PoseStamped _rr_pose) {
 
+double PurePursuitControl::SetSteer(geometry_msgs::PoseStamped _rr_pose, double vel_ms) {
+
+    FindTargetPoint(_rr_pose, vel_ms);
+    GetRearPos(_rr_pose);
+    CalcWyptDist();
+    CalcAlpha();
+    CalcTheta();
+
+    steering_val = CutMinMax(theta_deg, (-1.)*MAX_STEERING_DEG, MAX_STEERING_DEG);
+    steering_val = map(steering_val, (-1.)*MAX_STEERING_DEG, MAX_STEERING_DEG, -1., 1.);
+
+    return steering_val;
+}
+
+
+
+// find target point & calculate distance
+void PurePursuitControl::FindTargetPoint(geometry_msgs::PoseStamped _rr_pose, double vel_ms) {
+    lookahead_dist_m = LOOKAHEAD_DIST_MIN + LOOKAHEAD_GRADIENT*vel_ms;
     wypt_car_dist_m = 99999.;         // just a big number
     double temp_dist;
     int search_start = target_wypt_idx + SEARCH_IDX_RANGE;
@@ -65,7 +82,7 @@ void PurePursuitControl::FindTargetPoint(geometry_msgs::PoseStamped _rr_pose) {
 
         temp_dist = sqrt( pow(wypt_x_from_fr, 2) + pow(wypt_y_from_fr, 2) );
 
-        if (temp_dist < LOOKAHEAD_DIST) {
+        if (temp_dist < lookahead_dist_m) {
             wypt_car_dist_m = temp_dist;
             target_wypt_idx = idx;
 
@@ -77,21 +94,6 @@ void PurePursuitControl::FindTargetPoint(geometry_msgs::PoseStamped _rr_pose) {
     wypt_pos_y = waypoints[target_wypt_idx][1];
 }
 
-
-
-double PurePursuitControl::SetSteer(geometry_msgs::PoseStamped _rr_pose) {
-
-    FindTargetPoint(_rr_pose);
-    GetRearPos(_rr_pose);
-    CalcWyptDist();
-    CalcAlpha();
-    CalcTheta();
-
-    steering_val = CutMinMax(theta_deg, (-1.)*MAX_STEERING_DEG, MAX_STEERING_DEG);
-    steering_val = map(steering_val, (-1.)*MAX_STEERING_DEG, MAX_STEERING_DEG, -1., 1.);
-
-    return steering_val;
-}
 
 
 void PurePursuitControl::GetRearPos(geometry_msgs::PoseStamped _rr_pose) {
@@ -147,13 +149,13 @@ void PurePursuitControl::CalcTheta() {
     // std::endl;
 }
 
-
+/*
 bool PurePursuitControl::ArrivedLKDist () {
     if (wypt_car_dist_m < LOOKAHEAD_DIST)
         return true;
     else
         return false;
-}
+}*/
 
 
 double PurePursuitControl::steer_val() {
@@ -171,6 +173,7 @@ void PurePursuitControl::PrintValue() {
         "vehicle rear pos x : " << vehicle_pos_x << "\n" <<
         "vehicle rear pos y : " << vehicle_pos_y << "\n\n" <<
         
+        "lookahead distance (m) : " << lookahead_dist_m << "\n" <<
         "waypoint distance (m) : " << wypt_car_dist_m << "\n" << 
         "waypoint yaw(deg) : " << rad2deg(wypt_yaw_rad) << "\n" <<
         "vehicle pos yaw(deg) : " << rad2deg(vehicle_pos_yaw_rad) << "\n" <<
