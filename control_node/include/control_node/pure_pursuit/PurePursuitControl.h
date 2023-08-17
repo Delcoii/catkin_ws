@@ -11,7 +11,7 @@
 #include "control_node/math_functions/math_functions.h"
 
 #define LOOKAHEAD_DIST_MIN  15.
-#define LOOKAHEAD_GRADIENT  1.
+#define LOOKAHEAD_GRADIENT  1.2
 #define SEARCH_IDX_RANGE    100
 
 #define MAX_STEERING_DEG    34.999999642

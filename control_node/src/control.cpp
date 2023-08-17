@@ -87,6 +87,7 @@ int main(int argc, char** argv) {
         std::cout <<
             "idx : " << visualizing_target_idx << "\n" << 
             "target vel(km/h) : " << waypoints[visualizing_target_idx][TARGET_VEL_IDX]*3.6 << "\n" <<
+            "kappa : " << waypoints[visualizing_target_idx][CURVATURE_IDX] << "\n" <<
         std::endl;
 
         

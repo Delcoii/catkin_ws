@@ -146,6 +146,7 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
     // MovingAverage speed_mov_avg(SPEED_AVG_WINDOW_SIZE, STRAIGHT_SPEED_MS);
     // MovingAverage kappa_mov_avg(KAPPA_AVG_WINDOW_SIZE, 0.);
     std::vector<double> velocity_container;
+    std::vector<double> kappa_container;
 
     for (int idx = 0; idx < IDX_DIFF; idx++) {
         velocity_container.push_back(STRAIGHT_SPEED_MS);
@@ -183,7 +184,7 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
         double boonja = 2. * arma::norm(arma::cross(next_now, prev_now), 2);
         double boonmo = arma::norm(next_now, 2) * arma::norm(now_prev, 2) * arma::norm(next_prev, 2);
         double kappa = boonja / boonmo;
-        // kappa = kappa_mov_avg.Filter(kappa);
+        kappa_container.push_back(kappa);
         
         double max_vel_ms = sqrt(MAX_LATERAL_ACCEL_MS2 / (kappa));
         max_vel_ms = CutMinMax(max_vel_ms, 0.0, STRAIGHT_SPEED_MS);
@@ -218,5 +219,6 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
 
     for (int idx = 0; idx < container.size(); idx++) {
         container[idx].push_back(velocity_container[idx]);
+        container[idx].push_back(kappa_container[idx]);
     }
 }
