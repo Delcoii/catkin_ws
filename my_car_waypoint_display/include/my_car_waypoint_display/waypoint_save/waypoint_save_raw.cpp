@@ -143,7 +143,8 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
     
     std::vector<double> velocity_container;
     std::vector<double> kappa_container;
-    MovingAverage speed_mov_avg(SPEED_AVG_WINDOW_SIZE, 0.);
+    // MovingAverage speed_mov_avg(SPEED_AVG_WINDOW_SIZE, 0.);
+    MovingAverage speed_mov_avg(SPEED_AVG_WINDOW_SIZE, HIGHWAY_SPEED_MS);
 
     // starting in highway..
     for (int idx = 0; idx < IDX_DIFF; idx++) {
@@ -192,11 +193,11 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
         else {
             max_vel_ms = CutMinMax(max_vel_ms, 0.0, TOWN_SPEED_MS);
         }
-        max_vel_ms = speed_mov_avg.Filter(max_vel_ms);
-
-
+        // ee
+        // max_vel_ms = speed_mov_avg.Filter(max_vel_ms);
         velocity_container.push_back(max_vel_ms);
         
+        /*
         std::cout <<
             "\n\nidx : " << idx << "\n" <<
             "boonja : " << boonja << "\n" << 
@@ -204,7 +205,8 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
             "kappa : " << kappa << "\n" <<
             "vel : " << max_vel_ms << "\n" <<
             velocity_container.size() << "\n" <<
-        std::endl;   
+        std::endl;  
+        */ 
     }
 
 
@@ -216,6 +218,43 @@ void SetVelocityProfile(std::vector<std::vector<double>>& container) {
 
     int vel_len = velocity_container.size();
     std::cout << "velocity set total size : " << vel_len << std::endl;
+
+    /* ee
+    // search forward
+    for (int idx = 0; idx < vel_len-1; idx++) {
+        if (velocity_container[idx+1] > velocity_container[idx]) {
+            double dist = sqrt(
+                pow(container[idx+1][0] - container[idx][0], 2) +
+                pow(container[idx+1][1] - container[idx][1], 2)
+            );
+            double predicting_time_s = (2. * dist) / (velocity_container[idx]+velocity_container[idx+1]);
+
+            double ref_vel = MAX_LONGI_ACCEL_MS2 * predicting_time_s + velocity_container[idx];
+
+            if (velocity_container[idx+1] > ref_vel) {
+                velocity_container[idx+1] = ref_vel;
+                std::cout << "removed" << std::endl;
+            }
+        }
+    }
+    // search backward
+    for (int idx = vel_len-1; idx > 0; idx--) {
+        if (velocity_container[idx-1] > velocity_container[idx]) {
+            double dist = sqrt(
+                pow(container[idx-1][0] - container[idx][0], 2) +
+                pow(container[idx-1][1] - container[idx][1], 2)
+            );
+            double predicting_time_s = (2. * dist) / (velocity_container[idx]+velocity_container[idx+1]);
+
+            double ref_vel = MAX_LONGI_ACCEL_MS2 * predicting_time_s + velocity_container[idx];
+
+            if (velocity_container[idx-1] > ref_vel) {
+                velocity_container[idx-1] = ref_vel;
+                std::cout << "removed" << std::endl;
+            }
+        }
+    }*/
+
 
 
     for (int idx = 0; idx < container.size(); idx++) {

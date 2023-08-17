@@ -6,7 +6,7 @@
 #include "control_node/math_functions/math_functions.h"
 
 #define SEARCH_IDX_RANGE            100
-#define ARCTAN_TERM_CONSTANT        5.
+#define ARCTAN_TERM_CONSTANT        7.5
 #define ARCTAN_TERM_MIN_VELOCITY    0.01
 #define MAX_STEERING_DEG            34.99999642
 #define MIN_STEERING_DEG            -34.99999642

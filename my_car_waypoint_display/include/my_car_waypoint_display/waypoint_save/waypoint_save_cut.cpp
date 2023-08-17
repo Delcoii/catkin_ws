@@ -1,6 +1,6 @@
 // save latitude, longitude
 // executable linked to following_lat_lon.cpp
-#include "control_node/waypoint_save/waypoint_save.h"
+#include "my_car_waypoint_display/waypoint_save/waypoint_save.h"
 
 
 void GetWaypoints (std::vector<std::vector<double>>& container) {

@@ -92,9 +92,16 @@ void StanleyControl::GetArcTanTerm(double _velocity) {
         direction_include_dist_m = car_wypt_dist_m * (-1.);
     }
 
-    arctan_term_deg = rad2deg(atan(deg2rad(
+    if (_velocity > 0.2) {
+        arctan_term_deg = rad2deg(atan(deg2rad(
         ARCTAN_TERM_CONSTANT * direction_include_dist_m /
         (_velocity + ARCTAN_TERM_MIN_VELOCITY))));
+    }
+    else {
+        arctan_term_deg = rad2deg(atan(deg2rad(
+        ARCTAN_TERM_CONSTANT * direction_include_dist_m /
+        (_velocity + 3.))));
+    }
 }
 
 /*

@@ -9,7 +9,7 @@
 #define P_GAIN                  10.
 #define I_GAIN                  0.
 #define D_GAIN                  0.
-#define SWITCH_VEL_MS           10.
+#define SWITCH_VEL_MS           15.
 // #define TARGET_VELOCITY_MS      20.
 
 

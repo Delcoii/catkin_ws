@@ -50,11 +50,14 @@
 #define TARGET_VEL_IDX          2
 #define CURVATURE_IDX           3
 
-#define MAX_LATERAL_ACCEL_MS2   2.0
-#define STRAIGHT_SPEED_MS       41.6        // 150km/h
+#define MAX_LATERAL_ACCEL_MS2   2.0         // feeling comfortable
+#define MAX_LONGI_ACCEL_MS2     2.0         // feeling comfortable
+#define HIGHWAY_SPEED_MS        41.6        // 150km/h
+#define TOWN_SPEED_MS           9.7222      // 35km/h
+#define ENTERING_HIGHWAY_IDX    4365
 #define IDX_DIFF                20
 
-#define SPEED_AVG_WINDOW_SIZE   400
+#define SPEED_AVG_WINDOW_SIZE   20
 #define KAPPA_AVG_WINDOW_SIZE   400
 #define GAUSSIAN_WINDOW_SIZE    100
 

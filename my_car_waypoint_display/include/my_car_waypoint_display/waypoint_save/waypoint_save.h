@@ -50,7 +50,8 @@
 #define TARGET_VEL_IDX          2
 #define CURVATURE_IDX           3
 
-#define MAX_LATERAL_ACCEL_MS2   3.6
+#define MAX_LATERAL_ACCEL_MS2   2.0         // feeling comfortable
+#define MAX_LONGI_ACCEL_MS2     2.0         // feeling comfortable
 #define HIGHWAY_SPEED_MS        41.6        // 150km/h
 #define TOWN_SPEED_MS           9.7222      // 35km/h
 #define ENTERING_HIGHWAY_IDX    4365
