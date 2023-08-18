@@ -1,7 +1,7 @@
 #include "control_node/error_calculate/error_calculate.h"
 
 FollowingError::FollowingError() {
-    error_pub = nh.advertise<std_msgs::Float64>("cross_track_error", 100);
+    error_pub = nh.advertise<control_node::ErrorMsgs>("following_errors", 100);
     window = std::vector<double> (WINDOW_SIZE, 0);
 
     average = 0;
@@ -17,9 +17,10 @@ void FollowingError::PutInWindow() {
     window.push_back(car_waypoint_dist_m);
 }
 
+/* CTE : cross track error */
+double FollowingError::FilteringCTE(double dist_m) {
 
-double FollowingError::FilteredValue(double dist_m) {
-
+    /* init cross_track_error by using moving average filter */
     GetCrossTrackError(dist_m);
     PutInWindow();
 
@@ -27,24 +28,31 @@ double FollowingError::FilteredValue(double dist_m) {
     for (int idx = 0; idx < WINDOW_SIZE; idx++) {
         sum += window[idx];
     }
-    cross_track_error_m.data = sum / (double)(WINDOW_SIZE);
+    errors.cross_track_error = sum / (double)(WINDOW_SIZE);
+    /*********************************************************/
 
 
+    /* calculate average of cross track error */
     sample_count++;
 
-    // calculating alpha = k-1 / k
     double alpha = (double)(sample_count-1) / (double)sample_count;
-    // calculating average
-    average = alpha * average + (1.-alpha) * cross_track_error_m.data;
+    average = alpha * average + (1.-alpha) * errors.cross_track_error;
+    /******************************************/
 
-    return cross_track_error_m.data;
+    return errors.cross_track_error;
 }
 
-double FollowingError::err_avg() {
+double FollowingError::cte_err_avg() {
     return average;
 }
 
-void FollowingError::PubCrossTrackError() {
-    error_pub.publish(cross_track_error_m);
+void FollowingError::GetSpeed(double target_speed, double now_speed) {
+    errors.target_speed_ms = target_speed;
+    errors.current_speed_ms = now_speed;
+}
+
+
+void FollowingError::PubError() {
+    error_pub.publish(errors);
 }
 

@@ -56,6 +56,7 @@ public:
 
     double steer_val();
     int target_idx();
+    double distance_m();
 
     void PrintValue();
 };

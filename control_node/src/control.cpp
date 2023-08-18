@@ -14,14 +14,15 @@
 
 
 int main(int argc, char** argv) {
-    ros::init(argc, argv, "control_node");
-    ros::Time::init();
-    ros::Rate loop_rate(LOOP_HZ);
 
     std::vector<std::vector<double>> waypoints;
     GetWaypoints(waypoints);
     LatLon2Utm(waypoints);
     SetVelocityProfile(waypoints);
+
+    ros::init(argc, argv, "control_node");
+    ros::Time::init();
+    ros::Rate loop_rate(LOOP_HZ);
 
     ControlMsgs msg4control;
     control_node::CarlaEgoVehicleStatus car_stat;
@@ -42,16 +43,17 @@ int main(int argc, char** argv) {
     int visualizing_target_idx = 0;
     while (ros::ok()) {
 
-    
+        // not subscribed yet
         if (msg4control.FrPoseReceived() == false) {
             ros::spinOnce();
             loop_rate.sleep();
             continue;
         }
         
-
+        // arrived.. node ends
         if (visualizing_target_idx >= waypoints.size()-5) {
-            std::cout << error_check.err_avg() << std::endl;
+            std::cout << error_check.cte_err_avg() << std::endl;
+            msg4control.PubControlMsg(0., 0., 1.);
             return 0;
         }
 
@@ -62,43 +64,43 @@ int main(int argc, char** argv) {
 
         stanley.SetSteer(front_wheel_pose, car_stat.velocity);
         pp.SetSteer(rear_wheel_pose, car_stat.velocity);
-        if (car_stat.velocity < SWITCH_VEL_MS) {      // if car is slower than 15m/s
+        if (car_stat.velocity < SWITCH_VEL_MS) {        // if car is slower than 15m/s
             
             std::cout << "using stanley controller\n";
             steer = stanley.steer_val();
+    
             visualizing_target_idx = stanley.target_idx();
             msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
-            stanley.PrintValue();
+            msg4control.PubControlMsg(throttle, steer, brake);
+            // stanley.PrintValue();
         }
-        else {                              // if car is faster..
-            
+        else {                                          // if car is faster..
             std::cout << "using pure pursuit controller\n";
             steer = pp.steer_val();
+
             visualizing_target_idx = pp.target_idx();
             msg4control.PubVisMsg(waypoints[visualizing_target_idx]);
-            pp.PrintValue();
+            msg4control.PubControlMsg(throttle, steer, brake);
+            // pp.PrintValue();
         }
-    
+
+        visualizing_target_idx = stanley.target_idx();  // using just closest waypoint
+        error_check.FilteringCTE(stanley.distance_m());
+        error_check.GetSpeed(waypoints[visualizing_target_idx][TARGET_VEL_IDX], car_stat.velocity);
+        error_check.PubError();           // publish cross track err
         
-        msg4control.PubControlMsg(throttle, steer, brake);
+    
 
-
-        visualizing_target_idx = stanley.target_idx();
+        
         std::cout <<
             "idx : " << visualizing_target_idx << "\n" << 
             "target vel(km/h) : " << waypoints[visualizing_target_idx][TARGET_VEL_IDX]*3.6 << "\n" <<
             "kappa : " << waypoints[visualizing_target_idx][CURVATURE_IDX] << "\n" <<
         std::endl;
 
-        
-        // use distance from stanley
-        error_check.FilteredValue(stanley.distance_m());
-        error_check.PubCrossTrackError();           // publish cross track err
-
         ros::spinOnce();
         loop_rate.sleep();
     }
-
 
     return 0;
 }

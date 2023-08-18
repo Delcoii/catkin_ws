@@ -27,6 +27,7 @@ find_package(Armadillo REQUIRED)
 add_message_files( FILES
     CarlaEgoVehicleControl.msg
     CarlaEgoVehicleStatus.msg
+    ErrorMsgs.msg
 )
 
 ## Generate added messages and services with any dependencies listed here

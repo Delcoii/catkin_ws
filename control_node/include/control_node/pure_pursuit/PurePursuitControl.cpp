@@ -167,6 +167,9 @@ int PurePursuitControl::target_idx() {
     return target_wypt_idx;
 }
 
+double PurePursuitControl::distance_m() {
+    return wypt_car_dist_m;
+}
 
 void PurePursuitControl::PrintValue() {
     std::cout << 

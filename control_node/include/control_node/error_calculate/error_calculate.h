@@ -7,7 +7,9 @@
 #include <std_msgs/Float64.h>
 #include <geometry_msgs/PoseStamped.h>
 
-#define WINDOW_SIZE         20
+#include "control_node/ErrorMsgs.h"
+
+#define WINDOW_SIZE         50
 
 class FollowingError {
 
@@ -21,17 +23,20 @@ class FollowingError {
     double average;                 // for normal average filter
     double sample_count;
     
-    std_msgs::Float64 cross_track_error_m;
+    control_node::ErrorMsgs errors;
 
 public:
     FollowingError();
     void GetCrossTrackError(double dist_m);
-    void PutInWindow();
+    void PutInWindow();     // for cross track error filtering
 
-    double FilteredValue(double dist_m);
-    double err_avg();
+    // CTE : cross track error
+    double FilteringCTE(double dist_m);
+    double cte_err_avg();
 
-    void PubCrossTrackError();
+    void GetSpeed(double target_speed, double now_speed);
+
+    void PubError();
 
 };
 
