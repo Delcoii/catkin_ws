@@ -8,8 +8,9 @@
 #define LOOP_HZ                 60.
 #define P_GAIN                  10.
 #define I_GAIN                  0.
-#define D_GAIN                  0.
+#define D_GAIN                  1.
 #define SWITCH_VEL_MS           15.
+#define BRAKE_MAX               -0.2
 // #define TARGET_VELOCITY_MS      20.
 
 
@@ -33,7 +34,7 @@ int main(int argc, char** argv) {
 
     PurePursuitControl pp;
     StanleyControl stanley;
-    LongitudinalControl longi_control((1./LOOP_HZ), 1., -1., P_GAIN, D_GAIN, I_GAIN);
+    LongitudinalControl longi_control((1./LOOP_HZ), 1., BRAKE_MAX, P_GAIN, D_GAIN, I_GAIN);
     double throttle;
     double brake;
     double steer;
