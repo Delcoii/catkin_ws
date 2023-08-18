@@ -16,6 +16,7 @@ int main(int argc, char** argv) {
 
     ros::NodeHandle nh;
     ros::Publisher pub = nh.advertise<std_msgs::Float64>("pub_target_velocity", 100);
+    ros::Publisher pub_kappa = nh.advertise<std_msgs::Float64>("pub_kappa", 100);
 
     std::cout << "waiting 5 sec.." << std::endl;
     ros::Duration duration(5.0);
@@ -23,9 +24,12 @@ int main(int argc, char** argv) {
 
     int idx = 0;
     std_msgs::Float64 vel;
+    std_msgs::Float64 kappa;
     while(ros::ok()) {
         vel.data = waypoints[idx][TARGET_VEL_IDX];
+        kappa.data = waypoints[idx][CURVATURE_IDX];
         pub.publish(vel);
+        pub_kappa.publish(kappa);
 
         idx++;
         std::cout << idx << std::endl;
